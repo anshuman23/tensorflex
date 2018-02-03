@@ -1,9 +1,9 @@
 # TensorflEx
 ### Pre-application Milestones
 - [x] __Simple `TF_Version` Hello World test__
-    - The first commit refers to the rather simplistic hello world program for the C API and not in general for Tensorflow. This is present [here](https://www.tensorflow.org/install/install_c#validate_your_installation). This Hello world test currently works!
+    - The first commit refers to the rather simplistic hello world program for the C API and not in general for Tensorflow. This is present [here](https://www.tensorflow.org/install/install_c#validate_your_installation). This Hello world test works!
     
-- [ ] __Graph, Tensor & Session based proper TF Hello World test__
+- [x] __Graph, Tensor & Session based proper TF Hello World test__
     - The better hello world test is to be able to program a real "Hello World!" TF program. This would involve declaring a string as a Tensorflow constant and then run a session to print the Tensor in a graph. As Python is still the best client for TF, this would look something like this in Python:
 
     ```python
@@ -17,7 +17,7 @@
     OUTPUT: "Hello World!"
     ```
     
-    This would require the creation of C bindings capable of creating a new graph, constant string tensors, new operations, creating a session and then running it. This ~~work is currently in progress~~ __now works__. 
+    This requires the creation of C bindings capable of creating a new graph, constant string tensors, new operations, creating a session and then running it. All the code has been done so far for running string tensors in sessions (after graphs and operations have been created) in the NIF. This works as well. 
     
 ### How to run these
 
@@ -61,4 +61,4 @@
         
         
 ### Summer and post-application milestones
-- Will be added with time
+- Will be added in time
