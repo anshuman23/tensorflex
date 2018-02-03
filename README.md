@@ -1,5 +1,5 @@
 # TensorflEx
-### Pre-GSoC Milestones
+### Pre-application Milestones
 - [x] __Simple `TF_Version` Hello World test__
     - The first commit refers to the rather simplistic hello world program for the C API and not in general for Tensorflow. This is present [here](https://www.tensorflow.org/install/install_c#validate_your_installation). This Hello world test currently works!
 
@@ -12,6 +12,7 @@
     with tf.Session() as sess:
         print(sess.run(tf.constant("Hello World!")))
     ```
+    This would require the creation of C bindings capable of creating a new graph, constant string tensors, new operations, creating a session and then running it. This work is currently in progress. 
     
 ### How to run these
 
