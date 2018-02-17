@@ -8,6 +8,7 @@
 
 
 ### How to run
+- You need to have the Tensorflow C API installed. Look [here](https://www.tensorflow.org/install/install_c) for details.
 - Clone this repository and `cd` into it
 - Run `mix deps.get` to install the dependencies
 - Run `mix compile` to compile the code
