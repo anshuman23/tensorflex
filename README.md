@@ -1,16 +1,18 @@
 # TensorflEx
 
 ## Contents
-- [x] __How to run__
-- [x] __Documentation__ 
-- [x] __Pre-application Milestones__
-- [ ] __Summer and post-application milestones__
+- [x] [__How to run__](https://github.com/anshuman23/tensorflex/#how-to-run)
+- [x] [__Documentation__](https://github.com/anshuman23/tensorflex/#documentation) 
+- [x] [__Pre-application Milestones__](https://github.com/anshuman23/tensorflex/#pre-application-milestones)
+- [ ] [__Summer and post-application milestones__](https://github.com/anshuman23/tensorflex/#summer-and-post-application-milestones)
+
 
 ### How to run
 - Clone this repository and `cd` into it
 - Run `mix deps.get` to install the dependencies
 - Run `mix compile` to compile the code
 - Open up `iex` using `iex -S mix`
+
 
 ### Documentation
 Tensorflow requires the creation of graphs to represent the operations in a network. It also requires the creation of tensors, which are just the basic multi-dimensional datatype that contain data arrays and matrices for computation purposes. Once the graph is created an operation also needs to be created, which contains information about the kind of graph we are going to be running. The graph is finally run in a _session_, in which input and output tensors are defined.
