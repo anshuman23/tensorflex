@@ -11,7 +11,7 @@ void graph_destr(ErlNifEnv *env, void *res) {
 
 void op_desc_destr(ErlNifEnv *env, void *res) {}
 
-static ERL_NIF_TERM tf_version(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM version(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   return enif_make_string(env, TF_Version() , ERL_NIF_LATIN1);
 }
@@ -23,14 +23,14 @@ int res_loader(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
   return 0;
 }
 
-static ERL_NIF_TERM tf_string_constant(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM string_constant(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   char buf[1024];
   enif_get_string(env, argv[0] , buf, 1024, ERL_NIF_LATIN1);
   return enif_make_string(env, buf, ERL_NIF_LATIN1);
 }
 
-static ERL_NIF_TERM tf_new_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM new_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   TF_Graph **graph_resource_alloc = enif_alloc_resource(graph_resource, sizeof(TF_Graph *));
   TF_Graph *new_graph = TF_NewGraph();
@@ -41,7 +41,7 @@ static ERL_NIF_TERM tf_new_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
 }
 
 
-static ERL_NIF_TERM tf_new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   TF_Graph **graph;
   enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
@@ -64,7 +64,7 @@ static ERL_NIF_TERM tf_new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[
   return op_desc;
 }
 
-static ERL_NIF_TERM tf_create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   TF_Graph **graph;
   enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
@@ -108,11 +108,11 @@ static ERL_NIF_TERM tf_create_and_run_sess(ErlNifEnv *env, int argc, const ERL_N
 
 static ErlNifFunc nif_funcs[] =
   {
-    { "tf_version", 0, tf_version },
-    { "tf_new_graph", 0, tf_new_graph },
-    { "tf_new_op", 3, tf_new_op },
-    { "tf_string_constant", 1, tf_string_constant },
-    { "tf_create_and_run_sess", 3, tf_create_and_run_sess }
+    { "version", 0, version },
+    { "new_graph", 0, new_graph },
+    { "new_op", 3, new_op },
+    { "string_constant", 1, string_constant },
+    { "create_and_run_sess", 3, create_and_run_sess }
   };
 
 ERL_NIF_INIT(Elixir.TensorflEx, nif_funcs, res_loader, NULL, NULL, NULL)
