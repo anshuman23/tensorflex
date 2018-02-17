@@ -17,7 +17,7 @@
 ### Documentation
 Tensorflow requires the creation of graphs to represent the operations in a network. It also requires the creation of tensors, which are just the basic multi-dimensional datatype that contain data arrays and matrices for computation purposes. Once the graph is created an operation also needs to be created, which contains information about the kind of graph we are going to be running. The graph is finally run in a _session_, in which input and output tensors are defined.
 
-For the purposes of describing the current capabilities of TensorflEx, the same things hold true. After getting `iex` started, we first define a new graph:
+For the purposes of describing the current capabilities of TensorflEx, the same things hold true. We will be creating a graph that just does a constant operation of running a constant string tensor as input and passing this as an output to another tensor. Instead of using the tensor to hold large amounts of data, for this example it just holds a string containing `Hello World!`. After getting `iex` started, we first define a new graph:
 ```elixir
 iex(1)> graph = TensorflEx.new_graph
 ```
@@ -33,7 +33,7 @@ Lastly, we create and simultaneously run the session for our graph and then prin
 ```elixir
 iex(4)> IO.puts TensorflEx.create_and_run_sess(graph, op_desc, tensor)
 ```
-This will give us the value of the string constant tensor as output. 
+This will give us the value of the string constant tensor as output, that is `Hello World!` as output. 
 
 ### Pre-application Milestones
 - [x] __Simple `TF_Version` Hello World test__
