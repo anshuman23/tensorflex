@@ -43,11 +43,8 @@ This will give us the value of the string constant tensor as output, that is `He
     __Code in TensorflEx__:
     
     ```elixir
-    
-      iex(1)> c "TensorflEx.ex"
-      [TensorflEx]
-        
-      iex(2)> IO.puts "Hello World! Tensorflow #{TensorflEx.version}"
+      
+      iex(1)> IO.puts "Hello World! Tensorflow #{TensorflEx.version}"
       Hello World! Tensorflow 1.4.1
       :ok
       
@@ -71,20 +68,17 @@ This will give us the value of the string constant tensor as output, that is `He
         
     ```elixir
         
-        iex(1)> c "TensorflEx.ex"
-        [TensorflEx]
-        
-        iex(2)> graph = TensorflEx.new_graph
+        iex(1)> graph = TensorflEx.new_graph
         2018-02-03 21:06:07.923328: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
         #Reference<0.85340593.4211212290.58261>
         
-        iex(3)> op_desc = TensorflEx.new_op(graph, "Const", "test")
+        iex(2)> op_desc = TensorflEx.new_op(graph, "Const", "test")
         #Reference<0.85340593.4211212290.58539>
         
-        iex(4)> tensor = TensorflEx.string_constant('Hello World!')
+        iex(3)> tensor = TensorflEx.string_constant('Hello World!')
         'Hello World!'
         
-        iex(5)> IO.puts TensorflEx.create_and_run_sess(graph, op_desc, tensor)
+        iex(4)> IO.puts TensorflEx.create_and_run_sess(graph, op_desc, tensor)
         => [INFO] Loaded Graph correctly
         => [INFO] Loaded Operation Description correctly
         => [INFO] Session Run Complete
