@@ -1,4 +1,4 @@
-defmodule TensorflEx.MixProject do
+defmodule Tensorflex.MixProject do
   use Mix.Project
 
   def project do

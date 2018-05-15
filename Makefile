@@ -4,11 +4,10 @@ LIBTENSORFLOW_PATH = /usr/local/lib
 CFLAGS += -I$(ERLANG_PATH)
 CFLAGS += -Ic_src
 LDFLAGS += -L$(LIBTENSORFLOW_PATH)
-LIB_SO_NAME = priv/TensorflEx.so
+LIB_SO_NAME = priv/Tensorflex.so
 CFLAGS += -fPIC
-NIF=c_src/TensorflEx.c
+NIF=c_src/Tensorflex.c
 
 $(LIB_SO_NAME): $(NIF)
 	mkdir -p priv
 	$(CC) $(CFLAGS) -shared $(LDFLAGS) $^ -ltensorflow -o $@
-
