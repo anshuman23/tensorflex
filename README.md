@@ -3,6 +3,8 @@
 ## Contents
 - [__How to run__](https://github.com/anshuman23/tensorflex/#how-to-run)
 - [__Documentation__](https://github.com/anshuman23/tensorflex/#documentation) 
+- [__Pull Requests Made__](https://github.com/anshuman23/tensorflex/#pull-requests-made) 
+
 
 
 ### How to run
@@ -34,3 +36,7 @@
     Successfully imported graph
     '[INFO] Graph loaded\n'
     ```
+### Pull Requests Made 
+- In chronological order:
+    - [PR #2: Renamed app to Tensorflex from TensorflEx](https://github.com/anshuman23/tensorflex/pull/2) 
+    - [PR #3: Added support for reading pretrained graph definition files](https://github.com/anshuman23/tensorflex/pull/3)
