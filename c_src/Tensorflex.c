@@ -115,5 +115,5 @@ static ErlNifFunc nif_funcs[] =
     { "create_and_run_sess", 3, create_and_run_sess }
   };
 
-ERL_NIF_INIT(Elixir.TensorflEx, nif_funcs, res_loader, NULL, NULL, NULL)
+ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)
 

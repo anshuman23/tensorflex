@@ -1,8 +1,8 @@
-defmodule TensorflEx do
+defmodule Tensorflex do
   @on_load :load_nifs
 
   def load_nifs do
-    :erlang.load_nif("priv/TensorflEx", 0)
+    :erlang.load_nif("priv/Tensorflex", 0)
   end
 
   def version do
