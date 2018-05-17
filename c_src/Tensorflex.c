@@ -75,37 +75,6 @@ static ERL_NIF_TERM string_constant(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   return enif_make_string(env, buf, ERL_NIF_LATIN1);
 }
 
-static ERL_NIF_TERM read_file(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
-{
-  ErlNifBinary filepath;
-  enif_inspect_binary(env,argv[0], &filepath);
-
-  char* file = enif_alloc(filepath.size+1);
-  memset(file, 0, filepath.size+1);
-  memcpy(file, (void *) filepath.data, filepath.size);
-
-  FILE *f = fopen(file, "rb");
-  fseek(f, 0, SEEK_END);
-  long fsize = ftell(f);
-  fseek(f, 0, SEEK_SET);
-
-  void* data = malloc(fsize);
-  fread(data, fsize, 1, f);
-  fclose(f);
-
-  TF_Buffer* buf = TF_NewBuffer();
-  buf->data = data;
-  buf->length = fsize;
-  buf->data_deallocator = free_buffer;
-
-  TF_Buffer **buffer_resource_alloc = enif_alloc_resource(buffer_resource, sizeof(TF_Buffer *));
-  memcpy((void *) buffer_resource_alloc, (void *) &buf, sizeof(TF_Buffer *));
-  ERL_NIF_TERM buffer = enif_make_resource(env, buffer_resource_alloc);
-  enif_release_resource(buffer_resource_alloc);
-  return buffer;
-
-}
-
 
 static ERL_NIF_TERM new_import_graph_def_opts(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
@@ -150,29 +119,47 @@ static ERL_NIF_TERM new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
   return op_desc;
 }
 
-static ERL_NIF_TERM graph_import_graph_def(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
-  TF_Graph **graph;
-  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
+  ErlNifBinary filepath;
+  enif_inspect_binary(env,argv[0], &filepath);
 
-  TF_Buffer **buffer;
-  enif_get_resource(env, argv[1], buffer_resource, (void *) &buffer);
+  char* file = enif_alloc(filepath.size+1);
+  memset(file, 0, filepath.size+1);
+  memcpy(file, (void *) filepath.data, filepath.size);
 
-  TF_ImportGraphDefOptions **graph_opts;
-  enif_get_resource(env, argv[2], graph_opts_resource, (void *) &graph_opts);
+  FILE *f = fopen(file, "rb");
+  fseek(f, 0, SEEK_END);
+  long fsize = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  void* data = malloc(fsize);
+  fread(data, fsize, 1, f);
+  fclose(f);
+
+  TF_Buffer* buf = TF_NewBuffer();
+  buf->data = data;
+  buf->length = fsize;
+  buf->data_deallocator = free_buffer;
 
   TF_Status* status = TF_NewStatus();
+  TF_ImportGraphDefOptions *graph_opts = TF_NewImportGraphDefOptions();
+  TF_Graph *graph = TF_NewGraph();
   
-  TF_GraphImportGraphDef(*graph, *buffer, *graph_opts, status);
+  TF_GraphImportGraphDef(graph, buf, graph_opts, status);
   if (TF_GetCode(status) != TF_OK) {
-    fprintf(stderr, "ERROR: Unable to import graph %s", TF_Message(status));
-    return 1;
+    return enif_make_tuple2(env,enif_make_atom(env,"error"),enif_make_string(env, "Unable to import graph", ERL_NIF_LATIN1));
   }
   else {
     fprintf(stderr, "Successfully imported graph\n");
   }
 
-  return enif_make_string(env, "[INFO] Graph loaded\n", ERL_NIF_LATIN1);
+  TF_Graph **graph_resource_alloc = enif_alloc_resource(graph_resource, sizeof(TF_Graph *));
+  memcpy((void *) graph_resource_alloc, (void *) &graph, sizeof(TF_Graph *));
+  ERL_NIF_TERM loaded_graph = enif_make_resource(env, graph_resource_alloc);
+  enif_release_resource(graph_resource_alloc);
+  return loaded_graph;
+  
 }
 
 static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -220,11 +207,9 @@ static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_
 static ErlNifFunc nif_funcs[] =
   {
     { "version", 0, version },
-    { "read_file", 1, read_file },
     { "new_graph", 0, new_graph },
-    { "new_import_graph_def_opts", 0, new_import_graph_def_opts },
     { "new_op", 3, new_op },
-    { "graph_import_graph_def", 3, graph_import_graph_def },
+    { "read_graph", 1, read_graph },
     { "string_constant", 1, string_constant },
     { "create_and_run_sess", 3, create_and_run_sess }
   };
