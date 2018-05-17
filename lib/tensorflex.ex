@@ -21,6 +21,10 @@ defmodule Tensorflex do
     raise "NIF read_graph/1 not implemented"
   end
 
+  def print_graph_ops(_graph) do
+    raise "NIF print_graph_ops/1 not implemented"
+  end
+
   def string_constant(_value) do
     raise "NIF tf_string_constant/1 not implemented"
   end

@@ -162,6 +162,21 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   
 }
 
+static ERL_NIF_TERM print_graph_ops(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+  TF_Graph **graph;
+  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
+
+  size_t pos = 0;
+  TF_Operation* op;
+  while ((op = TF_GraphNextOperation(*graph, &pos)) != NULL) {
+    fprintf(stderr, "%s\n",TF_OperationName(op));	
+  }
+
+  return enif_make_atom(env,"ok");
+  
+}
+
 static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   TF_Graph **graph;
@@ -210,6 +225,7 @@ static ErlNifFunc nif_funcs[] =
     { "new_graph", 0, new_graph },
     { "new_op", 3, new_op },
     { "read_graph", 1, read_graph },
+    { "print_graph_ops", 1, print_graph_ops },
     { "string_constant", 1, string_constant },
     { "create_and_run_sess", 3, create_and_run_sess }
   };
