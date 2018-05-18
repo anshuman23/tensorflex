@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define BASE_STRING_LENGTH 255
+
 void free_buffer(void* data, size_t length) {
   free(data);
 }
-
-
 
 ErlNifResourceType *graph_resource, *op_desc_resource, *tensor_resource, *session_resource, *op_resource, *buffer_resource, *status_resource, *graph_opts_resource;
 
@@ -75,7 +75,6 @@ static ERL_NIF_TERM string_constant(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   return enif_make_string(env, buf, ERL_NIF_LATIN1);
 }
 
-
 static ERL_NIF_TERM new_import_graph_def_opts(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   TF_ImportGraphDefOptions **graph_opts_resource_alloc = enif_alloc_resource(graph_opts_resource, sizeof(TF_ImportGraphDefOptions *));
@@ -119,6 +118,48 @@ static ERL_NIF_TERM new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
   return op_desc;
 }
 
+const char* error_to_string(TF_Status* status, char* error)
+{
+  switch(TF_GetCode(status))
+    {
+    case TF_CANCELLED: strcpy(error,"cancelled");
+      break;
+    case TF_UNKNOWN: strcpy(error,"unknown");
+      break;
+    case TF_INVALID_ARGUMENT: strcpy(error,"invalid_argument");
+      break;
+    case TF_DEADLINE_EXCEEDED: strcpy(error,"deadline_exceeded");
+      break;
+    case TF_NOT_FOUND: strcpy(error,"not_found");
+      break;
+    case TF_ALREADY_EXISTS: strcpy(error, "already_exists");
+      break;
+    case TF_PERMISSION_DENIED: strcpy(error,"permission_denied");
+      break;
+    case TF_UNAUTHENTICATED: strcpy(error,"unauthenticated");
+      break;
+    case TF_RESOURCE_EXHAUSTED: strcpy(error,"resource_exhausted");
+      break;
+    case TF_FAILED_PRECONDITION: strcpy(error,"failed_precondition");
+      break;
+    case TF_ABORTED: strcpy(error,"aborted");
+      break;
+    case TF_OUT_OF_RANGE: strcpy(error,"out_of_range");
+      break;
+    case TF_UNIMPLEMENTED: strcpy(error,"unimplemented");
+      break;
+    case TF_INTERNAL: strcpy(error,"internal");
+      break;
+    case TF_UNAVAILABLE: strcpy(error,"unavailable");
+      break;
+    case TF_DATA_LOSS: strcpy(error,"data_loss");
+      break;
+    default: strcpy(error,"unlisted_code");
+    }
+  
+  return error;
+}
+
 static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   ErlNifBinary filepath;
@@ -148,7 +189,10 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   
   TF_GraphImportGraphDef(graph, buf, graph_opts, status);
   if (TF_GetCode(status) != TF_OK) {
-    return enif_make_tuple2(env,enif_make_atom(env,"error"),enif_make_string(env, "Unable to import graph", ERL_NIF_LATIN1));
+
+    char error_str[BASE_STRING_LENGTH];
+    error_to_string(status, error_str);
+    return enif_make_tuple2(env,enif_make_atom(env,"error"),enif_make_atom(env,error_str));
   }
   else {
     fprintf(stderr, "Successfully imported graph\n");
@@ -160,6 +204,39 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   enif_release_resource(graph_resource_alloc);
   return loaded_graph;
   
+}
+
+static ERL_NIF_TERM get_graph_ops(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+  TF_Graph **graph;
+  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
+
+  int n_ops = 0;
+  size_t pos = 0;
+  TF_Operation *op_count;
+  while ((op_count = TF_GraphNextOperation(*graph, &pos)) != NULL) {
+    n_ops++;
+  }
+
+  ERL_NIF_TERM *op_list;
+  ERL_NIF_TERM op_list_eterm;
+  TF_Operation *op_temp;
+  ErlNifBinary erl_str;
+  op_list = malloc(sizeof(ERL_NIF_TERM)*n_ops);
+  pos = 0;
+  
+  char op_name[BASE_STRING_LENGTH];
+  for(int i=0; i<n_ops; i++) {
+    op_temp = TF_GraphNextOperation(*graph, &pos);
+    strcpy(op_name, (char*) TF_OperationName(op_temp));
+    enif_alloc_binary(strlen(op_name), &erl_str);
+    memcpy(erl_str.data, op_name, strlen(op_name));
+    op_list[i] = enif_make_binary(env,&erl_str);
+  }
+
+  op_list_eterm = enif_make_list_from_array(env, op_list, n_ops);
+  free(op_list);
+  return op_list_eterm;
 }
 
 static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -207,11 +284,8 @@ static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_
 static ErlNifFunc nif_funcs[] =
   {
     { "version", 0, version },
-    { "new_graph", 0, new_graph },
-    { "new_op", 3, new_op },
     { "read_graph", 1, read_graph },
-    { "string_constant", 1, string_constant },
-    { "create_and_run_sess", 3, create_and_run_sess }
+    { "get_graph_ops", 1, get_graph_ops },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)
