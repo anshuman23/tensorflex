@@ -32,3 +32,4 @@
     - [PR #2: Renamed app to Tensorflex from TensorflEx](https://github.com/anshuman23/tensorflex/pull/2) 
     - [PR #3: Added support for reading pretrained graph definition files](https://github.com/anshuman23/tensorflex/pull/3)
     - [PR #4: Merged all support functions into read_graph; returning atoms](https://github.com/anshuman23/tensorflex/pull/4)
+    - [PR #6: Returning list of op names in get_graph_ops and extended error atoms to all TF error codes](https://github.com/anshuman23/tensorflex/pull/6)
