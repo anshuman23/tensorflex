@@ -118,46 +118,44 @@ static ERL_NIF_TERM new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
   return op_desc;
 }
 
-const char* error_to_string(TF_Status* status, char* error)
+static ERL_NIF_TERM error_to_atom(ErlNifEnv *env, TF_Status* status)
 {
   switch(TF_GetCode(status))
     {
-    case TF_CANCELLED: strcpy(error,"cancelled");
+    case TF_CANCELLED: return enif_make_atom(env,"cancelled");
       break;
-    case TF_UNKNOWN: strcpy(error,"unknown");
+    case TF_UNKNOWN: return enif_make_atom(env,"unknown");
       break;
-    case TF_INVALID_ARGUMENT: strcpy(error,"invalid_argument");
+    case TF_INVALID_ARGUMENT: return enif_make_atom(env,"invalid_argument");
       break;
-    case TF_DEADLINE_EXCEEDED: strcpy(error,"deadline_exceeded");
+    case TF_DEADLINE_EXCEEDED: return enif_make_atom(env,"deadline_exceeded");
       break;
-    case TF_NOT_FOUND: strcpy(error,"not_found");
+    case TF_NOT_FOUND: return enif_make_atom(env,"not_found");
       break;
-    case TF_ALREADY_EXISTS: strcpy(error, "already_exists");
+    case TF_ALREADY_EXISTS: return enif_make_atom(env, "already_exists");
       break;
-    case TF_PERMISSION_DENIED: strcpy(error,"permission_denied");
+    case TF_PERMISSION_DENIED: return enif_make_atom(env,"permission_denied");
       break;
-    case TF_UNAUTHENTICATED: strcpy(error,"unauthenticated");
+    case TF_UNAUTHENTICATED: return enif_make_atom(env,"unauthenticated");
       break;
-    case TF_RESOURCE_EXHAUSTED: strcpy(error,"resource_exhausted");
+    case TF_RESOURCE_EXHAUSTED: return enif_make_atom(env,"resource_exhausted");
       break;
-    case TF_FAILED_PRECONDITION: strcpy(error,"failed_precondition");
+    case TF_FAILED_PRECONDITION: return enif_make_atom(env,"failed_precondition");
       break;
-    case TF_ABORTED: strcpy(error,"aborted");
+    case TF_ABORTED: return enif_make_atom(env,"aborted");
       break;
-    case TF_OUT_OF_RANGE: strcpy(error,"out_of_range");
+    case TF_OUT_OF_RANGE: return enif_make_atom(env,"out_of_range");
       break;
-    case TF_UNIMPLEMENTED: strcpy(error,"unimplemented");
+    case TF_UNIMPLEMENTED:return enif_make_atom(env,"unimplemented");
       break;
-    case TF_INTERNAL: strcpy(error,"internal");
+    case TF_INTERNAL: return enif_make_atom(env,"internal");
       break;
-    case TF_UNAVAILABLE: strcpy(error,"unavailable");
+    case TF_UNAVAILABLE: return enif_make_atom(env,"unavailable");
       break;
-    case TF_DATA_LOSS: strcpy(error,"data_loss");
+    case TF_DATA_LOSS: return enif_make_atom(env,"data_loss");
       break;
-    default: strcpy(error,"unlisted_code");
-    }
-  
-  return error;
+    default: return enif_make_atom(env,"unlisted_code");
+    }  
 }
 
 static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -189,10 +187,7 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   
   TF_GraphImportGraphDef(graph, buf, graph_opts, status);
   if (TF_GetCode(status) != TF_OK) {
-
-    char error_str[BASE_STRING_LENGTH];
-    error_to_string(status, error_str);
-    return enif_make_tuple2(env,enif_make_atom(env,"error"),enif_make_atom(env,error_str));
+    return enif_make_tuple2(env, enif_make_atom(env,"error"), error_to_atom(env,status));
   }
   else {
     fprintf(stderr, "Successfully imported graph\n");
@@ -225,13 +220,11 @@ static ERL_NIF_TERM get_graph_ops(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
   op_list = malloc(sizeof(ERL_NIF_TERM)*n_ops);
   pos = 0;
   
-  char op_name[BASE_STRING_LENGTH];
   for(int i=0; i<n_ops; i++) {
     op_temp = TF_GraphNextOperation(*graph, &pos);
-    strcpy(op_name, (char*) TF_OperationName(op_temp));
-    enif_alloc_binary(strlen(op_name), &erl_str);
-    memcpy(erl_str.data, op_name, strlen(op_name));
-    op_list[i] = enif_make_binary(env,&erl_str);
+    enif_alloc_binary(strlen((char*) TF_OperationName(op_temp)), &erl_str);
+    memcpy(erl_str.data, (char*) TF_OperationName(op_temp), strlen((char*) TF_OperationName(op_temp)));
+    op_list[i] = enif_make_binary(env, &erl_str);
   }
 
   op_list_eterm = enif_make_list_from_array(env, op_list, n_ops);
