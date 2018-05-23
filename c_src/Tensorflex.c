@@ -158,6 +158,56 @@ static ERL_NIF_TERM error_to_atom(ErlNifEnv *env, TF_Status* status)
     }  
 }
 
+static ERL_NIF_TERM datatype_to_atom(ErlNifEnv *env, TF_DataType type)
+{
+  switch(type)
+    {
+    case TF_FLOAT: return enif_make_atom(env,"tf_float");
+      break;
+    case TF_DOUBLE: return enif_make_atom(env,"tf_double");
+      break;
+    case TF_INT32: return enif_make_atom(env,"tf_int32");
+      break;
+    case TF_UINT8: return enif_make_atom(env,"tf_uint8");
+      break;
+    case TF_INT16: return enif_make_atom(env,"tf_int16");
+      break;
+    case TF_INT8: return enif_make_atom(env, "tf_int8");
+      break;
+    case TF_STRING: return enif_make_atom(env,"tf_string");
+      break;
+    case TF_COMPLEX64: return enif_make_atom(env,"tf_complex64");
+      break;
+    case TF_INT64: return enif_make_atom(env,"tf_int64");
+      break;
+    case TF_BOOL: return enif_make_atom(env,"tf_bool");
+      break;
+    case TF_QINT8: return enif_make_atom(env,"tf_qint8");
+      break;
+    case TF_QUINT8: return enif_make_atom(env,"tf_quint8");
+      break;
+    case TF_QINT32:return enif_make_atom(env,"tf_qint32");
+      break;
+    case TF_BFLOAT16: return enif_make_atom(env,"tf_bfloat16");
+      break;
+    case TF_QINT16: return enif_make_atom(env,"tf_qint16");
+      break;
+    case TF_QUINT16: return enif_make_atom(env,"tf_quint16");
+      break;
+    case TF_UINT16: return enif_make_atom(env,"tf_uint16");
+      break;
+    case TF_COMPLEX128: return enif_make_atom(env,"tf_complex128");
+      break;
+    case TF_HALF: return enif_make_atom(env,"tf_half");
+      break;
+    case TF_RESOURCE: return enif_make_atom(env,"tf_resource");
+      break;
+    case TF_VARIANT: return enif_make_atom(env,"tf_variant");
+      break;
+    default: return enif_make_atom(env,"unlisted_datatype");
+    }  
+}
+
 static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
   ErlNifBinary filepath;
@@ -190,7 +240,7 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
     return enif_make_tuple2(env, enif_make_atom(env,"error"), error_to_atom(env,status));
   }
   else {
-    fprintf(stderr, "Successfully imported graph\n");
+    fprintf(stderr, "Successfully imported graph\r\n");
   }
 
   TF_Graph **graph_resource_alloc = enif_alloc_resource(graph_resource, sizeof(TF_Graph *));
@@ -274,11 +324,49 @@ static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_
   return enif_make_string(env, ((char *) TF_TensorData(output_tensor))+9 , ERL_NIF_LATIN1);
 }
 
+
+
+static ERL_NIF_TERM tensor_datatype(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  TF_Tensor **tensor;
+  enif_get_resource(env, argv[0], tensor_resource, (void *) &tensor);
+  TF_DataType type =  TF_TensorType(*tensor);
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), datatype_to_atom(env, type));
+}
+
+static ERL_NIF_TERM string_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  if (!(enif_is_binary(env, argv[0]))) {
+	return enif_make_tuple2(env, enif_make_atom(env,"error"), enif_make_atom(env,"non_binary_argument"));
+  }
+  ErlNifBinary str;
+  enif_inspect_binary(env, argv[0], &str);
+
+  TF_Status *status = TF_NewStatus();
+  void *val = enif_alloc(str.size+1);
+  memset(val, 0, str.size+1);
+  TF_StringEncode((void *) str.data, str.size, val, str.size+1, status);
+
+  if (TF_GetCode(status) != TF_OK) {
+ 	return enif_make_tuple2(env, enif_make_atom(env,"error"), error_to_atom(env,status));
+  }
+
+  tensor = TF_NewTensor(TF_STRING, 0, 0, val, str.size, tensor_deallocator, 0);
+  memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+  return new_tensor;
+}
+
 static ErlNifFunc nif_funcs[] =
   {
     { "version", 0, version },
     { "read_graph", 1, read_graph },
     { "get_graph_ops", 1, get_graph_ops },
+    { "string_tensor", 1, string_tensor },
+    { "tensor_datatype", 1, tensor_datatype },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)
