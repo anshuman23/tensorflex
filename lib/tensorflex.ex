@@ -8,7 +8,7 @@ defmodule Tensorflex do
   def version do
     raise "NIF tf_version/0 not implemented"
   end
-
+  
   def read_graph(_filepath) do
     raise "NIF read_graph/1 not implemented"
   end
@@ -16,5 +16,13 @@ defmodule Tensorflex do
   def get_graph_ops(_graph) do
     raise "NIF get_graph_ops/1 not implemented"
   end
-  
+
+  def string_tensor(_string) do
+    raise "NIF string_tensor/1 not implemented"
+  end
+
+  def tensor_datatype(_tensor) do
+    raise "NIF tensor_datatype/1 not implemented"
+  end
+
 end
