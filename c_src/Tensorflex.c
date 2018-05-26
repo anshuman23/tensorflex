@@ -3,8 +3,32 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
+#include <assert.h>
+
+typedef struct
+{
+    unsigned nrows;
+    unsigned ncols;
+    double* data;
+} Matrix;
+
+typedef union
+{
+    void* vp;
+    Matrix* p;
+} mx_t;
+
+#define POS(MX, ROW, COL) ((MX)->data[(ROW)* (MX)->ncols + (COL)])
 
 #define BASE_STRING_LENGTH 255
+
+static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp);
+static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols);
+static void matrix_destr(ErlNifEnv* env, void* obj);
+
+static ErlNifResourceType* resource_type = NULL;
+
 
 void free_buffer(void* data, size_t length) {
   free(data);
@@ -46,7 +70,6 @@ void op_destr(ErlNifEnv *env, void *res) {}
 void op_desc_destr(ErlNifEnv *env, void *res) {}
 
 void tensor_deallocator(void* data, size_t len, void* arg) {
-  fprintf(stderr, "free tensor %p\r\n", data);
   enif_free(data);
 }
 
@@ -65,57 +88,128 @@ int res_loader(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
   session_resource = enif_open_resource_type(env, NULL, "session", session_destr, flags, NULL);
   buffer_resource = enif_open_resource_type(env, NULL, "buffer", buffer_destr, flags, NULL);
   graph_opts_resource = enif_open_resource_type(env, NULL, "graph_opts",graph_opts_destr, flags, NULL);
+
+  ErlNifResourceType* rt = enif_open_resource_type(env, NULL, "matrix", matrix_destr, ERL_NIF_RT_CREATE, NULL);
+    if (rt == NULL) {
+	return -1;
+    }
+    assert(resource_type == NULL);
+    resource_type = rt;
+
   return 0;
 }
 
-static ERL_NIF_TERM string_constant(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+
+static ERL_NIF_TERM create_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  char buf[1024];
-  enif_get_string(env, argv[0] , buf, 1024, ERL_NIF_LATIN1);
-  return enif_make_string(env, buf, ERL_NIF_LATIN1);
+    unsigned nrows, ncols;
+    unsigned i, j;
+    ERL_NIF_TERM list, row, ret;
+    Matrix* mx = NULL;
+
+    if (!enif_get_uint(env, argv[0], &nrows) || nrows < 1 ||
+	!enif_get_uint(env, argv[1], &ncols) || ncols < 1) {
+
+	goto badarg;
+    }
+    mx = alloc_matrix(env, nrows, ncols);
+    list = argv[2];
+    for (i = 0; i<nrows; i++) {
+	if (!enif_get_list_cell(env, list, &row, &list)) {
+	    goto badarg;
+	}
+	for (j = 0; j<ncols; j++) {
+	    ERL_NIF_TERM v;
+	    if (!enif_get_list_cell(env, row, &v, &row) ||
+		!get_number(env, v, &POS(mx,i,j))) { 
+		goto badarg;
+	    }	    
+	}
+	if (!enif_is_empty_list(env, row)) {
+	    goto badarg;
+	}
+    }
+    if (!enif_is_empty_list(env, list)) {
+	goto badarg;
+    }
+
+    ret = enif_make_resource(env, mx);
+    enif_release_resource(mx);
+    return ret;
+
+badarg:
+    if (mx != NULL) {
+	enif_release_resource(mx);
+    }
+    return enif_make_badarg(env);
 }
 
-static ERL_NIF_TERM new_import_graph_def_opts(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+
+static ERL_NIF_TERM matrix_pos(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  TF_ImportGraphDefOptions **graph_opts_resource_alloc = enif_alloc_resource(graph_opts_resource, sizeof(TF_ImportGraphDefOptions *));
-  TF_ImportGraphDefOptions *new_graph_opts = TF_NewImportGraphDefOptions();
-  memcpy((void *) graph_opts_resource_alloc, (void *) &new_graph_opts, sizeof(TF_ImportGraphDefOptions *));
-  ERL_NIF_TERM graph_opts = enif_make_resource(env, graph_opts_resource_alloc);
-  enif_release_resource(graph_opts_resource_alloc);
-  return graph_opts;
+    mx_t mx;
+    unsigned i, j;
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp) ||
+	!enif_get_uint(env, argv[1], &i) || (--i >= mx.p->nrows) ||
+	!enif_get_uint(env, argv[2], &j) || (--j >= mx.p->ncols)) {
+	return enif_make_badarg(env);
+    }
+    return enif_make_double(env, POS(mx.p, i,j));
 }
 
-static ERL_NIF_TERM new_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM size_of_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  TF_Graph **graph_resource_alloc = enif_alloc_resource(graph_resource, sizeof(TF_Graph *));
-  TF_Graph *new_graph = TF_NewGraph();
-  memcpy((void *) graph_resource_alloc, (void *) &new_graph, sizeof(TF_Graph *));
-  ERL_NIF_TERM graph = enif_make_resource(env, graph_resource_alloc);
-  enif_release_resource(graph_resource_alloc);
-  return graph;
+    mx_t mx;
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+	return enif_make_badarg(env);
+    }
+    return enif_make_tuple2(env, enif_make_uint(env, mx.p->nrows),
+			    enif_make_uint(env, mx.p->ncols));
 }
 
-static ERL_NIF_TERM new_op(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM matrix_to_lists(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  TF_Graph **graph;
-  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
-  ErlNifBinary op_str;
-  enif_inspect_binary(env, argv[1], &op_str);
-  char* op = enif_alloc(op_str.size+1);
-  memset(op, 0, op_str.size+1);
-  memcpy(op, (void *) op_str.data, op_str.size);
-  ErlNifBinary name;
-  enif_inspect_binary(env, argv[2], &name);
-  char* label = enif_alloc(name.size+1);
-  memset(label, 0, name.size+1);
-  memcpy(label, (void *) name.data, name.size);
+    unsigned i, j;
+    ERL_NIF_TERM res;
+    mx_t mx;
+    mx.p = NULL;
 
-  TF_OperationDescription **op_desc_resource_alloc = enif_alloc_resource(op_desc_resource, sizeof(TF_OperationDescription *));
-  TF_OperationDescription *new_op_desc = TF_NewOperation(*graph, op, label);
-  memcpy((void *) op_desc_resource_alloc, (void *) &new_op_desc, sizeof(TF_OperationDescription *));
-  ERL_NIF_TERM op_desc = enif_make_resource(env, op_desc_resource_alloc);
-  enif_release_resource(op_desc_resource_alloc);
-  return op_desc;
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+    	return enif_make_badarg(env);
+    }
+    res = enif_make_list(env, 0);
+    for (i = mx.p->nrows; i-- > 0; ) {
+	ERL_NIF_TERM row = enif_make_list(env, 0);
+	for (j = mx.p->ncols; j-- > 0; ) {
+	    row = enif_make_list_cell(env, enif_make_double(env, POS(mx.p,i,j)),
+				      row);
+	}
+	res = enif_make_list_cell(env, row, res);
+    }
+    return res;
+}
+
+static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp)
+{
+    long i;
+    return enif_get_double(env, term, dp) || 
+	(enif_get_long(env, term, &i) && (*dp=(double)i, 1));
+}
+
+static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols)
+{
+    Matrix* mx = enif_alloc_resource(resource_type, sizeof(Matrix));
+    mx->nrows = nrows;
+    mx->ncols = ncols;
+    mx->data = enif_alloc(nrows*ncols*sizeof(double));
+    return mx;
+}
+
+static void matrix_destr(ErlNifEnv* env, void* obj)
+{
+    Matrix* mx = (Matrix*) obj;
+    enif_free(mx->data);
+    mx->data = NULL;
 }
 
 static ERL_NIF_TERM error_to_atom(ErlNifEnv *env, TF_Status* status)
@@ -239,15 +333,12 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   if (TF_GetCode(status) != TF_OK) {
     return enif_make_tuple2(env, enif_make_atom(env,"error"), error_to_atom(env,status));
   }
-  else {
-    fprintf(stderr, "Successfully imported graph\r\n");
-  }
 
   TF_Graph **graph_resource_alloc = enif_alloc_resource(graph_resource, sizeof(TF_Graph *));
   memcpy((void *) graph_resource_alloc, (void *) &graph, sizeof(TF_Graph *));
   ERL_NIF_TERM loaded_graph = enif_make_resource(env, graph_resource_alloc);
   enif_release_resource(graph_resource_alloc);
-  return loaded_graph;
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), loaded_graph);
   
 }
 
@@ -282,49 +373,6 @@ static ERL_NIF_TERM get_graph_ops(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
   return op_list_eterm;
 }
 
-static ERL_NIF_TERM create_and_run_sess(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
-{
-  TF_Graph **graph;
-  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
-  fprintf(stderr, "%s\n", "\n=> [INFO] Loaded Graph correctly\n");
-  TF_OperationDescription **op_desc;
-  enif_get_resource(env, argv[1], op_desc_resource, (void *) &op_desc);
-  fprintf(stderr, "%s\n", "\n=> [INFO] Loaded Operation Description correctly");
-  
-  char buf[1024];
-  enif_get_string(env, argv[2] , buf, 1024, ERL_NIF_LATIN1);
-  TF_Tensor * tensor = TF_AllocateTensor(TF_STRING, 0, 0, 8 + TF_StringEncodedSize( strlen(buf)));
-  TF_Status *status = TF_NewStatus();
-  TF_SessionOptions * options = TF_NewSessionOptions();
-  TF_Session * session = TF_NewSession(*graph, options, status);
-  TF_Tensor * output_tensor;
-  TF_Operation * operation;
-  struct TF_Output output;
-
-  TF_StringEncode(buf, strlen(buf), 8 + (char *) TF_TensorData(tensor), TF_StringEncodedSize(strlen(buf)), status);
-  memset(TF_TensorData(tensor), 0, 8);
-  TF_SetAttrTensor(*op_desc, "value", tensor, status);
-  TF_SetAttrType(*op_desc, "dtype", TF_TensorType(tensor));
-  operation = TF_FinishOperation(*op_desc, status);
-  output.oper = operation;
-  output.index = 0;
-
-  TF_SessionRun( session, 0,
-		 0, 0, 0, 
-		 &output, &output_tensor, 1,  
-		 &operation, 1, 
-		 0, status );
-
-  fprintf(stderr, "%s\n", "\n=> [INFO] Session Run Complete");
-
-  TF_CloseSession(session, status);
-  TF_DeleteSession(session, status);
-  TF_DeleteStatus(status);
-  TF_DeleteSessionOptions(options);
-  return enif_make_string(env, ((char *) TF_TensorData(output_tensor))+9 , ERL_NIF_LATIN1);
-}
-
-
 
 static ERL_NIF_TERM tensor_datatype(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   TF_Tensor **tensor;
@@ -339,7 +387,7 @@ static ERL_NIF_TERM string_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
   TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
 
   if (!(enif_is_binary(env, argv[0]))) {
-	return enif_make_tuple2(env, enif_make_atom(env,"error"), enif_make_atom(env,"non_binary_argument"));
+	return enif_make_badarg(env);
   }
   ErlNifBinary str;
   enif_inspect_binary(env, argv[0], &str);
@@ -357,14 +405,62 @@ static ERL_NIF_TERM string_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
   memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
   ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
   enif_release_resource(tensor_resource_alloc);
-  return new_tensor;
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
 }
+
+static ERL_NIF_TERM float_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  if (enif_is_number(env, argv[0])) {
+    void *val = enif_alloc(sizeof(double));
+    if (enif_get_double(env, argv[0], val)) {
+      tensor = TF_NewTensor(TF_FLOAT, 0, 0, val, sizeof(double), tensor_deallocator, 0);
+    } else return enif_make_badarg(env);
+  }
+
+  else {
+    mx_t mx1, mx2;
+    if (!enif_get_resource(env, argv[0], resource_type, &mx1.vp) || !enif_get_resource(env, argv[1], resource_type, &mx2.vp) || mx2.p->nrows > 1) {
+	return enif_make_badarg(env);
+    }
+
+    int ndims = (int)(mx1.p->ncols);
+
+    unsigned i,j;
+    int64_t dims[mx2.p->ncols];
+    int size_alloc = 1;
+    for (i = 0; i < mx2.p->nrows; i++) {
+	for (j = 0; j < mx2.p->ncols; j++) {
+	    size_alloc = size_alloc * POS(mx2.p, i, j);
+            dims[j] = POS(mx2.p, i, j);
+	}
+    }
+
+    tensor = TF_NewTensor(TF_FLOAT, dims, ndims, mx1.p->data, (size_alloc) * sizeof(double), tensor_deallocator, 0);
+
+  }
+
+  memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
+}
+
+
 
 static ErlNifFunc nif_funcs[] =
   {
+    {"create_matrix", 3, create_matrix},
+    {"matrix_pos", 3, matrix_pos},
+    {"size_of_matrix", 1, size_of_matrix},
+    {"matrix_to_lists", 1, matrix_to_lists},
     { "version", 0, version },
     { "read_graph", 1, read_graph },
     { "get_graph_ops", 1, get_graph_ops },
+    { "float_tensor", 2, float_tensor },
+    { "float_tensor", 1, float_tensor },
     { "string_tensor", 1, string_tensor },
     { "tensor_datatype", 1, tensor_datatype },
   };
