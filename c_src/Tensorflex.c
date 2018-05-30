@@ -438,7 +438,7 @@ static ERL_NIF_TERM float_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
 	}
     }
 
-    tensor = TF_NewTensor(TF_FLOAT, dims, ndims, mx1.p->data, (size_alloc) * sizeof(double), tensor_deallocator, 0);
+    tensor = TF_NewTensor(TF_DOUBLE, dims, ndims, mx1.p->data, (size_alloc) * sizeof(double), tensor_deallocator, 0);
 
   }
 
