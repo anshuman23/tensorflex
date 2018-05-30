@@ -416,7 +416,7 @@ static ERL_NIF_TERM float_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
   if (enif_is_number(env, argv[0])) {
     void *val = enif_alloc(sizeof(double));
     if (enif_get_double(env, argv[0], val)) {
-      tensor = TF_NewTensor(TF_FLOAT, 0, 0, val, sizeof(double), tensor_deallocator, 0);
+      tensor = TF_NewTensor(TF_DOUBLE, 0, 0, val, sizeof(double), tensor_deallocator, 0);
     } else return enif_make_badarg(env);
   }
 
