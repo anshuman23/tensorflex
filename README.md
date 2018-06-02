@@ -103,7 +103,7 @@
     iex(2)> vals = Tensorflex.create_matrix(1,3,[[245,202,9]])
     #Reference<0.3771206257.3662544900.104769>
 
-    iex(3)> Tensorflex.float_tensor64 123.12
+    iex(3)> Tensorflex.float64_tensor 123.12
     {:ok, #Reference<0.3771206257.3662544897.110716>}
 
     iex(4)> {:ok, ftensor} = Tensorflex.float64_tensor(vals,dims)
