@@ -33,12 +33,20 @@ defmodule Tensorflex do
     raise "NIF get_graph_ops/1 not implemented"
   end
 
-  def float_tensor(_float) do
-    raise "NIF float_tensor/1 not implemented"
+  def float64_tensor(_float) do
+    raise "NIF float_tensor64/1 not implemented"
   end
 
-  def float_tensor(_values, _dims) do
-    raise "NIF float_tensor/2 not implemented"
+  def float64_tensor(_values, _dims) do
+    raise "NIF float_tensor64/2 not implemented"
+  end
+
+  def float32_tensor(_float) do
+    raise "NIF float_tensor32/1 not implemented"
+  end
+
+  def float32_tensor(_values, _dims) do
+    raise "NIF float_tensor32/2 not implemented"
   end
 
   def string_tensor(_string) do
