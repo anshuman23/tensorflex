@@ -91,7 +91,7 @@
     
  - __Tensor usage__
     - Numeral Tensors:
-        - Basically `float_tensor` handles numeral tensors. It has two variants: one that takes in just 1 argument and the other which takes in 2 arguments
+        - Basically `float64_tensor` handles numeral tensors. It has two variants: one that takes in just 1 argument and the other which takes in 2 arguments
         - The one which takes 1 argument is just for making a tensor out of a single number
         - The 2 argument variant is actually more important and is used for multidimensional Tensors
         - Here, the first argument is the values and the second consists of the dimensions of the Tensor. Both these are matrices
@@ -103,10 +103,10 @@
     iex(2)> vals = Tensorflex.create_matrix(1,3,[[245,202,9]])
     #Reference<0.3771206257.3662544900.104769>
 
-    iex(3)> Tensorflex.float_tensor 123.12
+    iex(3)> Tensorflex.float_tensor64 123.12
     {:ok, #Reference<0.3771206257.3662544897.110716>}
 
-    iex(4)> {:ok, ftensor} = Tensorflex.float_tensor(vals,dims)
+    iex(4)> {:ok, ftensor} = Tensorflex.float64_tensor(vals,dims)
     {:ok, #Reference<0.3771206257.3662544897.111510>}
 
     iex(5)> Tensorflex.tensor_datatype ftensor
@@ -135,3 +135,4 @@
     - [PR #7: Added tensor support for strings and for getting TF_DataType](https://github.com/anshuman23/tensorflex/pull/7)
     - [PR #8: Added matrix functions, numeral tensors, better returns & removed unnecessary POC code](https://github.com/anshuman23/tensorflex/pull/8)
     - [PR #9: Added freeze graph Python example](https://github.com/anshuman23/tensorflex/pull/9)
+    - [PR #10: Tensors of TF_FLOAT and TF_DOUBLE type both supported](https://github.com/anshuman23/tensorflex/pull/10)
