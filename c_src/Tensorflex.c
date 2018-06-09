@@ -21,8 +21,6 @@ typedef union
 
 #define POS(MX, ROW, COL) ((MX)->data[(ROW)* (MX)->ncols + (COL)])
 
-#define BASE_STRING_LENGTH 255
-
 static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp);
 static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols);
 static void matrix_destr(ErlNifEnv* env, void* obj);
@@ -426,7 +424,7 @@ static ERL_NIF_TERM float64_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM 
 	return enif_make_badarg(env);
     }
 
-    int ndims = (int)(mx1.p->ncols);
+    int ndims = (int)(mx2.p->ncols);
 
     unsigned i,j;
     int64_t dims[mx2.p->ncols];
@@ -466,7 +464,7 @@ static ERL_NIF_TERM float32_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM 
 	return enif_make_badarg(env);
     }
 
-    int ndims = (int)(mx1.p->ncols);
+    int ndims = (int)(mx2.p->ncols);
 
     unsigned i,j;
     int64_t dims[mx2.p->ncols];
@@ -495,6 +493,112 @@ static ERL_NIF_TERM float32_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM 
   return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
 }
 
+static ERL_NIF_TERM allocate_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[], char* datatype) 
+{
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  mx_t mx;
+  if (!enif_get_resource(env, argv[0], resource_type, &mx.vp) || mx.p->nrows > 1) {
+	return enif_make_badarg(env);
+  }
+
+  int ndims = (int)(mx.p->ncols);
+  unsigned i,j;
+  int64_t dims[mx.p->ncols];
+  int size_alloc = 1;
+  for (i = 0; i < mx.p->nrows; i++) {
+	for (j = 0; j < mx.p->ncols; j++) {
+	    size_alloc = size_alloc * POS(mx.p, i, j);
+            dims[j] = POS(mx.p, i, j);
+	}
+  }
+
+  if(strcmp(datatype, "TF_FLOAT") == 0) {
+	tensor = TF_AllocateTensor(TF_FLOAT, dims, ndims, (size_alloc)* sizeof(float));
+  }
+  else if(strcmp(datatype, "TF_DOUBLE") == 0) {
+	tensor = TF_AllocateTensor(TF_DOUBLE, dims, ndims, (size_alloc)* sizeof(double));
+  } else return enif_make_badarg(env);
+
+  memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
+  
+}
+
+static ERL_NIF_TERM float32_tensor_alloc(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  return allocate_tensor(env, argc, argv, "TF_FLOAT");
+}
+
+static ERL_NIF_TERM float64_tensor_alloc(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  return allocate_tensor(env, argc, argv, "TF_DOUBLE");
+}
+
+static ERL_NIF_TERM run_session(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  TF_Graph **graph;
+  enif_get_resource(env, argv[0], graph_resource, (void *) &graph);
+
+  TF_Tensor **input_tensor;
+  enif_get_resource(env, argv[1], tensor_resource, (void *) &input_tensor);
+
+  TF_Tensor **output_tensor;
+  enif_get_resource(env, argv[2], tensor_resource, (void *) &output_tensor);
+
+  ErlNifBinary input_opname_bin;
+  enif_inspect_binary(env,argv[3], &input_opname_bin);
+  char* input_opname = enif_alloc(input_opname_bin.size+1);
+  memset(input_opname, 0, input_opname_bin.size+1);
+  memcpy(input_opname, (void *) input_opname_bin.data, input_opname_bin.size);
+
+  ErlNifBinary output_opname_bin;
+  enif_inspect_binary(env,argv[4], &output_opname_bin);
+  char* output_opname = enif_alloc(output_opname_bin.size+1);
+  memset(output_opname, 0, output_opname_bin.size+1);
+  memcpy(output_opname, (void *) output_opname_bin.data, output_opname_bin.size);
+
+  TF_Operation* input_op = TF_GraphOperationByName(*graph, input_opname);
+  TF_Output input_op_o = {input_op, 0};
+  TF_Operation* output_op = TF_GraphOperationByName(*graph, output_opname);
+  TF_Output output_op_o = {output_op, 0};
+
+  TF_Status* status = TF_NewStatus();
+  TF_SessionOptions* sess_opts = TF_NewSessionOptions();
+  TF_Session* session = TF_NewSession(*graph, sess_opts, status);
+  assert(TF_GetCode(status) == TF_OK);
+
+  TF_SessionRun(session, NULL, &input_op_o, &(*input_tensor), 1, &output_op_o, &(*output_tensor), 1, NULL, 0, NULL, status);
+
+  ERL_NIF_TERM *data_list, *data_list_eterm, data_list_of_lists;
+  data_list = malloc(sizeof(ERL_NIF_TERM)*TF_NumDims(*output_tensor));
+  data_list_eterm = malloc(sizeof(ERL_NIF_TERM)*((int)(TF_Dim(*output_tensor,0))));
+  float* data = (float*)(TF_TensorData(*output_tensor));
+  
+  for(int j=0; j<(int)(TF_Dim(*output_tensor,0)); j++)
+  {
+  	for(int i=0; i<TF_NumDims(*output_tensor); i++)
+  	{
+      		data_list[i] = enif_make_double(env, *data++);
+  	}
+
+  	data_list_eterm[j] = enif_make_list_from_array(env, data_list, TF_NumDims(*output_tensor));
+  }
+  
+  data_list_of_lists = enif_make_list_from_array(env, data_list_eterm, (int)(TF_Dim(*output_tensor,0)));
+  free(data_list);
+  free(data_list_eterm);
+  TF_CloseSession(session, status);
+  TF_DeleteSession(session, status);
+  TF_DeleteSessionOptions(sess_opts);
+  TF_DeleteStatus(status);
+  return data_list_of_lists;
+
+}
+
 
 static ErlNifFunc nif_funcs[] =
   {
@@ -511,6 +615,9 @@ static ErlNifFunc nif_funcs[] =
     { "float32_tensor", 1, float32_tensor },
     { "string_tensor", 1, string_tensor },
     { "tensor_datatype", 1, tensor_datatype },
+    { "float64_tensor_alloc", 1, float64_tensor_alloc },
+    { "float32_tensor_alloc", 1, float32_tensor_alloc },
+    { "run_session", 5, run_session },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)

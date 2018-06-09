@@ -57,4 +57,16 @@ defmodule Tensorflex do
     raise "NIF tensor_datatype/1 not implemented"
   end
 
+  def float32_tensor_alloc(_dims) do
+    raise "NIF float32_tensor_alloc/1 not implemented"
+  end
+
+  def float64_tensor_alloc(_dims) do
+    raise "NIF float64_tensor_alloc/1 not implemented"
+  end
+  
+  def run_session(_graph, _input_tensor, _output_tensor, _input_opname, _output_opname) do
+    raise "NIF run_session/5 not implemented"
+  end
+
 end
