@@ -574,18 +574,18 @@ static ERL_NIF_TERM run_session(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
   TF_SessionRun(session, NULL, &input_op_o, &(*input_tensor), 1, &output_op_o, &(*output_tensor), 1, NULL, 0, NULL, status);
 
   ERL_NIF_TERM *data_list, *data_list_eterm, data_list_of_lists;
-  data_list = malloc(sizeof(ERL_NIF_TERM)*TF_NumDims(*output_tensor));
+  data_list = malloc(sizeof(ERL_NIF_TERM)*TF_Dim(*output_tensor,(TF_NumDims(*output_tensor)-1)));
   data_list_eterm = malloc(sizeof(ERL_NIF_TERM)*((int)(TF_Dim(*output_tensor,0))));
   float* data = (float*)(TF_TensorData(*output_tensor));
   
   for(int j=0; j<(int)(TF_Dim(*output_tensor,0)); j++)
   {
-  	for(int i=0; i<TF_NumDims(*output_tensor); i++)
+  	for(int i=0; i<TF_Dim(*output_tensor,(TF_NumDims(*output_tensor)-1)); i++)
   	{
       		data_list[i] = enif_make_double(env, *data++);
   	}
 
-  	data_list_eterm[j] = enif_make_list_from_array(env, data_list, TF_NumDims(*output_tensor));
+  	data_list_eterm[j] = enif_make_list_from_array(env, data_list, TF_Dim(*output_tensor,(TF_NumDims(*output_tensor)-1)));
   }
   
   data_list_of_lists = enif_make_list_from_array(env, data_list_eterm, (int)(TF_Dim(*output_tensor,0)));
