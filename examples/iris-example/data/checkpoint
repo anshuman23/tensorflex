@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/anshuman/coding_practice/Iris-Neural-Network/data/graph"
+all_model_checkpoint_paths: "/home/anshuman/coding_practice/Iris-Neural-Network/data/graph"
