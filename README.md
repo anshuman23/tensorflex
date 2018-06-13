@@ -126,7 +126,7 @@
     ```
  - __Running sessions__
     - Sessions are basically used to run a set of inputs all through the operations in a predefined graph and obtain prediction outputs
-    - To exemplify the working of the entire prediction pipeline, I am going to use the simple toy graph created by the script in `examples/` called `graphdef_create.py` . Upon running the script you should have a graph definition file called `graphdef.pb`. You can also download this file stored in my Dropbox [here](https://www.dropbox.com/s/r7n6duan70s7scb/graphdef.pb?dl=0).
+    - To exemplify the working of the entire prediction pipeline, I am going to use the simple toy graph created by the script in `examples/toy-example/` called `graphdef_create.py` . Upon running the script you should have a graph definition file called `graphdef.pb`. You can also download this file stored in my Dropbox [here](https://www.dropbox.com/s/r7n6duan70s7scb/graphdef.pb?dl=0).
 
     - Then I would recommend going through the `graphdef_create.py` file to get an idea of what the operations are. The code basically works like a very simple matrix multiplication of some predefined weights with the input and then the addition of the biases. Ideally the weights should be ascertained through training but since this is a toy example they are predefined [(look here in the code)](https://github.com/anshuman23/tensorflex/blob/master/examples/graphdef_create.py#L17-L18).
 
