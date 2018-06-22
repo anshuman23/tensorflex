@@ -309,6 +309,10 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   memset(file, 0, filepath.size+1);
   memcpy(file, (void *) filepath.data, filepath.size);
 
+  const char *dot = strrchr(file, '.');
+  if(!dot || dot == file) return enif_make_badarg(env);
+  if(strcmp((dot + 1),"pb") != 0) return enif_make_badarg(env);
+
   FILE *f = fopen(file, "rb");
   fseek(f, 0, SEEK_END);
   long fsize = ftell(f);
