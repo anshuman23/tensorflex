@@ -4,6 +4,9 @@ LIBTENSORFLOW_PATH = /usr/local/lib
 CFLAGS += -I$(ERLANG_PATH)
 CFLAGS += -Ic_src
 LDFLAGS += -L$(LIBTENSORFLOW_PATH)
+ifeq ($(shell uname -s), Darwin)
+	LDFLAGS += -flat_namespace -undefined suppress
+endif
 LIB_SO_NAME = priv/Tensorflex.so
 CFLAGS += -fPIC
 NIF=c_src/Tensorflex.c
