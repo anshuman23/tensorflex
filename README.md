@@ -9,6 +9,7 @@
 
 ### How to run
 - You need to have the Tensorflow C API installed. Look [here](https://www.tensorflow.org/install/install_c) for details.
+- You also need the C library `libjpeg`. If you are using Linux or OSX, it should already be present on your machine, otherwise be sure to install. 
 - Clone this repository and `cd` into it
 - Run `mix deps.get` to install the dependencies
 - Run `mix compile` to compile the code
