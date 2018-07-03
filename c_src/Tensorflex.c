@@ -663,7 +663,7 @@ static ERL_NIF_TERM load_image_as_tensor(ErlNifEnv *env, int argc, const ERL_NIF
   jpeg_destroy_decompress(&cinfo);
   free(input_img);
 
-  const int size_alloc = output_size * sizeof(float);
+  const int size_alloc = output_size * sizeof(unsigned char);
   int64_t dims[3] = {width, height, num_pixels};
 
   tensor = TF_NewTensor(TF_UINT8, dims, 3, output, size_alloc, tensor_deallocator, 0);
