@@ -14,8 +14,9 @@
 - Run `mix compile` to compile the code
 - Open up `iex` using `iex -S mix`
 
-### Examples
-Examples are generally added in full description on my blog [here](http://anshumanc.ml). A blog post covering how to do classification on the Iris Dataset is present [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/). 
+### Example
+Examples are generally added in full description on my blog [here](http://anshumanc.ml). A blog post covering how to do classification on the Iris Dataset is present [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/).
+
 Here we will briefly touch upon how to use the Google V3 Inception pre-trained graph model to do image classficiation from over a 1000 classes. First, the Inception V3 model can be downloaded here: http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
 
 After unzipping, see that it contains the graphdef .pb file (`classify_image_graphdef.pb`) which contains our graph definition, a test jpeg image that should identify/classify as a panda (`cropped_panda.pb`) and a few other files I will detail later.
