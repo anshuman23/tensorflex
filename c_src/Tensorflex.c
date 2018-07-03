@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <assert.h>
+#include <jpeglib.h>
+#include <stdint.h>
 
 typedef struct
 {
@@ -603,6 +605,75 @@ static ERL_NIF_TERM run_session(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
 
 }
 
+static ERL_NIF_TERM load_image_as_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  int error_check;
+  unsigned long input_size;
+  unsigned char *input_img;
+  struct jpeg_decompress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+  unsigned long output_size;
+  unsigned char *output;
+  int row_stride, width, height, num_pixels;
+
+  ErlNifBinary filepath;
+  enif_inspect_binary(env,argv[0], &filepath);
+
+  char* file = enif_alloc(filepath.size+1);
+  memset(file, 0, filepath.size+1);
+  memcpy(file, (void *) filepath.data, filepath.size);
+
+  const char *dot = strrchr(file, '.');
+  if(!dot || dot == file) return enif_make_badarg(env);
+  if(!((strcmp((dot + 1),"jpg") == 0) || (strcmp((dot + 1),"jpeg") == 0))) return enif_make_badarg(env);
+ 
+  FILE* f = fopen(file, "rb");
+  fseek(f, 0, SEEK_END);
+  input_size  = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  input_img = (unsigned char*) malloc(input_size);
+  fread(input_img, input_size, 1, f);
+  fclose(f);
+
+  cinfo.err = jpeg_std_error(&jerr);	
+  jpeg_create_decompress(&cinfo);
+  jpeg_mem_src(&cinfo, input_img, input_size);
+  error_check = jpeg_read_header(&cinfo, TRUE);
+
+  if (error_check != 1) return enif_make_badarg(env);
+  jpeg_start_decompress(&cinfo);	
+  width = cinfo.output_width;
+  height = cinfo.output_height;
+  num_pixels = cinfo.output_components;
+  output_size = width * height * num_pixels;
+  output = (unsigned char*) malloc(output_size);
+  row_stride = width * num_pixels;
+
+  while (cinfo.output_scanline < cinfo.output_height) {
+	unsigned char *buf[1];
+	buf[0] = output + (cinfo.output_scanline) * row_stride;
+	jpeg_read_scanlines(&cinfo, buf, 1);
+  }
+
+  jpeg_finish_decompress(&cinfo);
+  jpeg_destroy_decompress(&cinfo);
+  free(input_img);
+
+  const int size_alloc = output_size * sizeof(float);
+  int64_t dims[3] = {width, height, num_pixels};
+
+  tensor = TF_NewTensor(TF_UINT8, dims, 3, output, size_alloc, tensor_deallocator, 0);
+  memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
+
+}
+
 
 static ErlNifFunc nif_funcs[] =
   {
@@ -622,6 +693,7 @@ static ErlNifFunc nif_funcs[] =
     { "float64_tensor_alloc", 1, float64_tensor_alloc },
     { "float32_tensor_alloc", 1, float32_tensor_alloc },
     { "run_session", 5, run_session },
+    { "load_image_as_tensor", 1, load_image_as_tensor },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)

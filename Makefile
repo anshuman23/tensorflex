@@ -13,4 +13,4 @@ NIF=c_src/Tensorflex.c
 
 $(LIB_SO_NAME): $(NIF)
 	mkdir -p priv
-	$(CC) $(CFLAGS) -shared $(LDFLAGS) $^ -ltensorflow -o $@
+	$(CC) $(CFLAGS) -shared $(LDFLAGS) $^ -ltensorflow -ljpeg -o $@
