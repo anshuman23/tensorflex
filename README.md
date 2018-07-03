@@ -175,7 +175,7 @@
     
 ### Pull Requests Made 
 - In chronological order:
-    - [PR #2: Renamed app to Tensorflex from TensorflEx](https://github.com/anshuman23/tensorflex/pull/2) 
+    - [PR #2: Renamed app to Tensorflex from TensorflEx](https://github.com/anshum]()an23/tensorflex/pull/2) 
     - [PR #3: Added support for reading pretrained graph definition files](https://github.com/anshuman23/tensorflex/pull/3)
     - [PR #4: Merged all support functions into read_graph; returning atoms](https://github.com/anshuman23/tensorflex/pull/4)
     - [PR #6: Returning list of op names in get_graph_ops and extended error atoms to all TF error codes](https://github.com/anshuman23/tensorflex/pull/6)
@@ -184,3 +184,9 @@
     - [PR #9: Added freeze graph Python example](https://github.com/anshuman23/tensorflex/pull/9)
     - [PR #10: Tensors of TF_FLOAT and TF_DOUBLE type both supported](https://github.com/anshuman23/tensorflex/pull/10)
     - [PR #11: Tensor allocations and Tensorflow Session support added](https://github.com/anshuman23/tensorflex/pull/11)
+    - [PR #12: Fixed issue regarding printing of outputs](https://github.com/anshuman23/tensorflex/pull/12)
+    - [PR #13: Added another example for blog post](https://github.com/anshuman23/tensorflex/pull/13)
+    - [PR #14: Added graph file check before loading](https://github.com/anshuman23/tensorflex/pull/13)
+    - [PR #15: Added tests](https://github.com/anshuman23/tensorflex/pull/15)
+    - [PR #16: Add linker flags for MacOS](https://github.com/anshuman23/tensorflex/pull/16)
+    - [PR #18: Added image loading capabilities (as 3D uint8 Tensors)](https://github.com/anshuman23/tensorflex/pull/18)
