@@ -14,6 +14,86 @@
 - Run `mix compile` to compile the code
 - Open up `iex` using `iex -S mix`
 
+### Examples
+Examples are generally added in full description on my blog [here](http://anshumanc.ml). A blog post covering how to do classification on the Iris Dataset is present [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/). 
+Here we will briefly touch upon how to use the Google V3 Inception pre-trained graph model to do image classficiation from over a 1000 classes. First, the Inception V3 model can be downloaded here: http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
+
+After unzipping, see that it contains the graphdef .pb file (`classify_image_graphdef.pb`) which contains our graph definition, a test jpeg image that should identify/classify as a panda (`cropped_panda.pb`) and a few other files I will detail later.
+
+Now for running this in Tensorflex first the graph is loaded:
+
+```elixir
+iex(1)> {:ok, graph} = Tensorflex.read_graph("classify_image_graph_def.pb")
+2018-07-02 00:27:40.532461: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA 2018-07-02 00:27:40.641913: W tensorflow/core/framework/op_def_util.cc:334] OpBatchNormWithGlobalNormalization is deprecated. It will cease to work in GraphDef version 9. Use tf.nn.batch_normalization().
+{:ok, #Reference<0.101807160.3449159683.146711>}
+```
+Then the cropped_panda image is loaded using the new `load_image_as_tensor` function:
+```elixir
+iex(2)> {:ok, input_tensor} = Tensorflex.load_image_as_tensor("cropped_panda.jpg")
+{:ok, #Reference<0.101807160.3449159683.146733>}
+```
+Then create the output tensor which will hold out output vector values. For the inception model, the output is received as a 1008x1 tensor, as there are 1008 classes in the model:
+```elixir
+iex(3)> out_dims = Tensorflex.create_matrix(1,2,[[1008,1]])
+#Reference<0.101807160.3449159683.146741>
+
+iex(4)> {:ok, output_tensor} = Tensorflex.float32_tensor_alloc(out_dims)
+{:ok, #Reference<0.101807160.3449159683.146748>}
+```
+Then the output results are read into a list called `results`. Also, the input operation in the Inception model is `DecodeJpeg` and the output operation is `softmax`:
+```elixir
+iex(5)> results = Tensorflex.run_session(graph, input_tensor, output_tensor, "DecodeJpeg", "softmax")
+[
+  [1.059142014128156e-4, 2.8240500250831246e-4, 8.30648496048525e-5,
+   1.2982363114133477e-4, 7.32232874725014e-5, 8.014426566660404e-5,
+   6.63459359202534e-5, 0.003170756157487631, 7.931600703159347e-5,
+   3.707312498590909e-5, 3.0997329304227605e-5, 1.4232713147066534e-4,
+   1.0381334868725389e-4, 1.1057958181481808e-4, 1.4321311027742922e-4,
+   1.203602587338537e-4, 1.3130248407833278e-4, 5.850398520124145e-5,
+   2.641105093061924e-4, 3.1629020668333396e-5, 3.906813799403608e-5,
+   2.8646905775531195e-5, 2.2863158665131778e-4, 1.2222197256051004e-4,
+   5.956588938715868e-5, 5.421260357252322e-5, 5.996063555357978e-5,
+   4.867801326327026e-4, 1.1005574924638495e-4, 2.3433618480339646e-4,
+   1.3062104699201882e-4, 1.317620772169903e-4, 9.388553007738665e-5,
+   7.076268957462162e-5, 4.281177825760096e-5, 1.6863139171618968e-4,
+   9.093972039408982e-5, 2.611844101920724e-4, 2.7584232157096267e-4,
+   5.157176201464608e-5, 2.144951868103817e-4, 1.3628098531626165e-4,
+   8.007588621694595e-5, 1.7929042223840952e-4, 2.2831936075817794e-4,
+   6.216531619429588e-5, 3.736453436431475e-5, 6.782123091397807e-5,
+   1.1538144462974742e-4, ...]
+]
+``` 
+Finally, we need to find which class has the maximum probability and identify it's label. Since results is a List of Lists, it's better to read in the nested list. Then we need to find the index of the element in the new list which as the maximum value. Therefore:
+```elixir
+iex(6)> actual_results = Enum.max(results)
+  [1.059142014128156e-4, 2.8240500250831246e-4, 8.30648496048525e-5,
+   1.2982363114133477e-4, 7.32232874725014e-5, 8.014426566660404e-5,
+   6.63459359202534e-5, 0.003170756157487631, 7.931600703159347e-5,
+   3.707312498590909e-5, 3.0997329304227605e-5, 1.4232713147066534e-4,
+   1.0381334868725389e-4, 1.1057958181481808e-4, 1.4321311027742922e-4,
+   1.203602587338537e-4, 1.3130248407833278e-4, 5.850398520124145e-5,
+   2.641105093061924e-4, 3.1629020668333396e-5, 3.906813799403608e-5,
+   2.8646905775531195e-5, 2.2863158665131778e-4, 1.2222197256051004e-4,
+   5.956588938715868e-5, 5.421260357252322e-5, 5.996063555357978e-5,
+   4.867801326327026e-4, 1.1005574924638495e-4, 2.3433618480339646e-4,
+   1.3062104699201882e-4, 1.317620772169903e-4, 9.388553007738665e-5,
+   7.076268957462162e-5, 4.281177825760096e-5, 1.6863139171618968e-4,
+   9.093972039408982e-5, 2.611844101920724e-4, 2.7584232157096267e-4,
+   5.157176201464608e-5, 2.144951868103817e-4, 1.3628098531626165e-4,
+   8.007588621694595e-5, 1.7929042223840952e-4, 2.2831936075817794e-4,
+   6.216531619429588e-5, 3.736453436431475e-5, 6.782123091397807e-5,
+   1.1538144462974742e-4, ...]
+
+iex(7)> maxval_class = Enum.max(results) |> Enum.max()
+0.8849328756332397
+
+iex(8)> Enum.find_index(actual_results, fn(x) -> x == maxval_class end)
+169
+``` 
+
+We can thus see that the class with the maximum probability predicted (__0.8849328756332397__) for the image is __169__. We will now find what the 169 label corresponds to. For this we can look back into the unzipped Inception folder, where there is a file called `imagenet_2012_challenge_label_map_proto.pbtxt`. On opening this file, we can find the string class identifier for the `169` class index. This is `n02510455` and is present on Line 1556 in the file. Finally, we need to match this string identifier to a set of identification labels by referring to the file `imagenet_synset_to_human_label_map.txt` file. Here we can see that corresponding to the string class `n02510455` the human labels are `giant panda, panda, panda bear, coon bear, Ailuropoda melanoleuca` (Line 3691 in the file). 
+
+Thus, we have correctly identified the animal in the image as a panda using Tensorflex! 
 
 ### Documentation
 
