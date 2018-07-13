@@ -696,5 +696,5 @@ static ErlNifFunc nif_funcs[] =
     { "load_image_as_tensor", 1, load_image_as_tensor },
   };
 
-ERL_NIF_INIT(Elixir.Tensorflex, nif_funcs, res_loader, NULL, NULL, NULL)
+ERL_NIF_INIT(Elixir.Tensorflex.NIFs, nif_funcs, res_loader, NULL, NULL, NULL)
 

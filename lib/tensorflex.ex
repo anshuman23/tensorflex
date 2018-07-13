@@ -1,76 +1,79 @@
 defmodule Tensorflex do
-  @on_load :load_nifs
 
-  def load_nifs do
-    :erlang.load_nif("priv/Tensorflex", 0)
+  alias Tensorflex.{NIFs, Graph, Tensor, Matrix}
+  
+  def read_graph(filepath) do
+    {:ok, ref} = NIFs.read_graph(filepath)
+    {:ok, %Graph{def: ref, name: filepath}}
   end
 
-  def create_matrix(_nrows,_ncolumns, _list) do
-    raise "NIF create_matrix/3 not implemented"
+  def get_graph_ops(%Graph{def: ref, name: filepath}) do
+    NIFs.get_graph_ops(ref)
   end
 
-  def matrix_pos(_matrix, _row, _column) do
-    raise "NIF matrix_pos/3 not implemented"
+  def create_matrix(nrows, ncols, datalist) do
+    ref = NIFs.create_matrix(nrows, ncols, datalist)
+    %Matrix{nrows: nrows, ncols: ncols, data: ref}
   end
 
-  def size_of_matrix(_matrix) do
-    raise "NIF size_of_matrix/1 not implemented"
+  def matrix_pos(%Matrix{nrows: nrows, ncols: ncols, data: ref}, row, col) do
+    NIFs.matrix_pos(ref, row, col)
   end
 
-  def matrix_to_lists(_matrix) do
-    raise "NIF matrix_to_term/1 not implemented"
+  def size_of_matrix(%Matrix{nrows: nrows, ncols: ncols, data: ref}) do
+    {nrows, ncols}
   end
 
-  def version do
-    raise "NIF tf_version/0 not implemented"
+  def matrix_to_lists(%Matrix{nrows: nrows, ncols: ncols, data: ref}) do
+    NIFs.matrix_to_lists(ref)
+  end
+
+  def float64_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.float64_tensor(val_ref, dim_ref)
+    {:ok, %Tensor{datatype: :tf_double, tensor: ref}} 
+  end
+
+  def float64_tensor(floatval) do
+    {:ok, ref} = NIFs.float64_tensor(floatval)
+    {:ok, %Tensor{datatype: :tf_double, tensor: ref}}
+  end
+
+  def float32_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.float32_tensor(val_ref, dim_ref)
+    {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
+  end
+
+  def float32_tensor(floatval) do
+    {:ok, ref} = NIFs.float32_tensor(floatval)
+    {:ok, %Tensor{datatype: :tf_float, tensor: ref}}
+  end
+
+  def string_tensor(stringval) do
+    {:ok, ref} = NIFs.string_tensor(stringval)
+    {:ok, %Tensor{datatype: :tf_string, tensor: ref}}
+  end
+
+  def float32_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.float32_tensor_alloc(dim_ref)
+    {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
+  end
+
+  def float64_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.float64_tensor_alloc(dim_ref)
+    {:ok, %Tensor{datatype: :tf_double, tensor: ref}} 
+  end
+
+  def tensor_datatype(%Tensor{datatype: datatype, tensor: ref}) do
+    {:ok, datatype}
+  end
+
+  def load_image_as_tensor(imagepath) do
+    {:ok, ref} = NIFs.load_image_as_tensor(imagepath)
+    {:ok, %Tensor{datatype: :tf_uint8, tensor: ref}}
+  end
+
+  def run_session(%Graph{def: graphdef, name: filepath}, %Tensor{datatype: input_datatype, tensor: input_ref}, %Tensor{datatype: output_datatype, tensor: output_ref}, input_opname, output_opname) do
+    NIFs.run_session(graphdef, input_ref, output_ref, input_opname, output_opname)
   end
   
-  def read_graph(_filepath) do
-    raise "NIF read_graph/1 not implemented"
-  end
-
-  def get_graph_ops(_graph) do
-    raise "NIF get_graph_ops/1 not implemented"
-  end
-
-  def float64_tensor(_float) do
-    raise "NIF float_tensor64/1 not implemented"
-  end
-
-  def float64_tensor(_values, _dims) do
-    raise "NIF float_tensor64/2 not implemented"
-  end
-
-  def float32_tensor(_float) do
-    raise "NIF float_tensor32/1 not implemented"
-  end
-
-  def float32_tensor(_values, _dims) do
-    raise "NIF float_tensor32/2 not implemented"
-  end
-
-  def string_tensor(_string) do
-    raise "NIF string_tensor/1 not implemented"
-  end
-
-  def tensor_datatype(_tensor) do
-    raise "NIF tensor_datatype/1 not implemented"
-  end
-
-  def float32_tensor_alloc(_dims) do
-    raise "NIF float32_tensor_alloc/1 not implemented"
-  end
-
-  def float64_tensor_alloc(_dims) do
-    raise "NIF float64_tensor_alloc/1 not implemented"
-  end
-
-  def load_image_as_tensor(_imagepath) do
-    raise "NIF load_image_as_tensor/1 not implemented"
-  end
-  
-  def run_session(_graph, _input_tensor, _output_tensor, _input_opname, _output_opname) do
-    raise "NIF run_session/5 not implemented"
-  end
-
 end
