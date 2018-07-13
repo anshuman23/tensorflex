@@ -1,8 +1,21 @@
 defmodule Tensorflex do
 
   alias Tensorflex.{NIFs, Graph, Tensor, Matrix}
+
+  defp empty_list?([[]]), do: true
+  defp empty_list?(list) when is_list(list) do
+    false
+  end
   
   def read_graph(filepath) do
+    unless File.exists?(filepath) do
+      raise ArgumentError, "graph definition file does not exist"
+    end
+
+    unless (Path.extname(filepath) == ".pb") do
+      raise ArgumentError, "file is not a protobuf .pb file"
+    end
+     
     {:ok, ref} = NIFs.read_graph(filepath)
     {:ok, %Graph{def: ref, name: filepath}}
   end
@@ -11,12 +24,16 @@ defmodule Tensorflex do
     NIFs.get_graph_ops(ref)
   end
 
-  def create_matrix(nrows, ncols, datalist) do
+  def create_matrix(nrows, ncols, datalist) when nrows > 0 and ncols > 0 do
+    if(empty_list? datalist) do
+      raise ArgumentError, "data provided cannot be an empty list"
+    end
+    
     ref = NIFs.create_matrix(nrows, ncols, datalist)
     %Matrix{nrows: nrows, ncols: ncols, data: ref}
   end
 
-  def matrix_pos(%Matrix{nrows: nrows, ncols: ncols, data: ref}, row, col) do
+  def matrix_pos(%Matrix{nrows: nrows, ncols: ncols, data: ref}, row, col) when row > 0 and col > 0 do
     NIFs.matrix_pos(ref, row, col)
   end
 
@@ -33,7 +50,7 @@ defmodule Tensorflex do
     {:ok, %Tensor{datatype: :tf_double, tensor: ref}} 
   end
 
-  def float64_tensor(floatval) do
+  def float64_tensor(floatval) when is_float(floatval) do
     {:ok, ref} = NIFs.float64_tensor(floatval)
     {:ok, %Tensor{datatype: :tf_double, tensor: ref}}
   end
@@ -43,12 +60,12 @@ defmodule Tensorflex do
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
   end
 
-  def float32_tensor(floatval) do
+  def float32_tensor(floatval) when is_float(floatval) do
     {:ok, ref} = NIFs.float32_tensor(floatval)
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}}
   end
 
-  def string_tensor(stringval) do
+  def string_tensor(stringval) when is_binary(stringval) do
     {:ok, ref} = NIFs.string_tensor(stringval)
     {:ok, %Tensor{datatype: :tf_string, tensor: ref}}
   end
@@ -68,6 +85,14 @@ defmodule Tensorflex do
   end
 
   def load_image_as_tensor(imagepath) do
+    unless File.exists?(imagepath) do
+      raise ArgumentError, "image file does not exist"
+    end
+
+    unless (Path.extname(imagepath) == ".jpg" or Path.extname(imagepath) == ".jpeg") do
+      raise ArgumentError, "file is not a JPEG image file"
+    end
+    
     {:ok, ref} = NIFs.load_image_as_tensor(imagepath)
     {:ok, %Tensor{datatype: :tf_uint8, tensor: ref}}
   end
