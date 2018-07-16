@@ -41,6 +41,14 @@ defmodule Tensorflex do
     {nrows, ncols}
   end
 
+  def append_to_matrix(%Matrix{nrows: nrows, ncols: ncols, data: ref}, datalist) do
+    unless (datalist |> List.flatten |> Kernel.length) == ncols do
+	raise ArgumentError, "data columns must be same as matrix and number of rows must be 1"
+    end
+    new_ref = NIFs.append_to_matrix(ref, datalist)
+    %Matrix{nrows: nrows+1, ncols: ncols, data: new_ref}
+  end
+
   def matrix_to_lists(%Matrix{nrows: nrows, ncols: ncols, data: ref}) do
     NIFs.matrix_to_lists(ref)
   end
