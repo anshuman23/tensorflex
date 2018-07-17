@@ -73,10 +73,6 @@ defmodule Tensorflex.NIFs do
     raise "NIF load_image_as_tensor/1 not implemented"
   end
   
-  def load_csv_as_matrix(_filepath, _header, _delimiter) do
-    raise "NIF load_csv_as_matrix/3 not implemented"
-  end
-
   def run_session(_graph, _input_tensor, _output_tensor, _input_opname, _output_opname) do
     raise "NIF run_session/5 not implemented"
   end
