@@ -13,6 +13,10 @@ defmodule Tensorflex.NIFs do
     raise "NIF matrix_pos/3 not implemented"
   end
 
+  def append_to_matrix(_matrix, _datalist) do
+    raise "NIF append_to_matrix/2 not implemented"
+  end
+
   def size_of_matrix(_matrix) do
     raise "NIF size_of_matrix/1 not implemented"
   end

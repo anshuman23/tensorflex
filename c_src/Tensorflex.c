@@ -25,6 +25,7 @@ typedef union
 
 static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp);
 static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols);
+static Matrix* realloc_matrix(ErlNifEnv* env, Matrix* mx, unsigned nrows, unsigned ncols);
 static void matrix_destr(ErlNifEnv* env, void* obj);
 
 static ErlNifResourceType* resource_type = NULL;
@@ -189,6 +190,49 @@ static ERL_NIF_TERM matrix_to_lists(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     return res;
 }
 
+static ERL_NIF_TERM append_to_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+  mx_t mx;
+  unsigned j;
+  unsigned nrows, ncols;
+  ERL_NIF_TERM list, row, ret;
+
+  if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) return enif_make_badarg(env);
+
+  nrows = mx.p->nrows;
+  ncols = mx.p->ncols;
+
+  mx.p = realloc_matrix(env, mx.p, nrows+1, ncols);
+  list = argv[1];
+  if (!enif_get_list_cell(env, list, &row, &list)) {
+	    goto badarg;
+  }
+  for (j = 0; j<ncols; j++) {
+    ERL_NIF_TERM v;
+    if (!enif_get_list_cell(env, row, &v, &row) ||
+	!get_number(env, v, &POS(mx.p,nrows,j))) { 
+	goto badarg;
+    }	    
+  }
+	if (!enif_is_empty_list(env, row)) {
+	    goto badarg;
+  }
+
+    if (!enif_is_empty_list(env, list)) {
+	goto badarg;
+    }
+
+    ret = enif_make_resource(env, mx.p);
+    enif_release_resource(mx.p);
+    return ret;
+
+badarg:
+    if (mx.p != NULL) {
+	enif_release_resource(mx.p);
+    }
+    return enif_make_badarg(env);
+}
+
 static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp)
 {
     long i;
@@ -202,6 +246,14 @@ static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols)
     mx->nrows = nrows;
     mx->ncols = ncols;
     mx->data = enif_alloc(nrows*ncols*sizeof(double));
+    return mx;
+}
+
+static Matrix* realloc_matrix(ErlNifEnv* env, Matrix* mx, unsigned nrows, unsigned ncols)
+{
+    mx->nrows = nrows;
+    mx->ncols = ncols;
+    mx->data = enif_realloc(mx->data, nrows*ncols*sizeof(double));
     return mx;
 }
 
@@ -679,6 +731,7 @@ static ErlNifFunc nif_funcs[] =
   {
     {"create_matrix", 3, create_matrix},
     {"matrix_pos", 3, matrix_pos},
+    {"append_to_matrix", 2, append_to_matrix},
     {"size_of_matrix", 1, size_of_matrix},
     {"matrix_to_lists", 1, matrix_to_lists},
     { "version", 0, version },
