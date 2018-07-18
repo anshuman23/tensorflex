@@ -22,6 +22,7 @@ typedef union
 } mx_t;
 
 #define POS(MX, ROW, COL) ((MX)->data[(ROW)* (MX)->ncols + (COL)])
+#define BUF_SIZE 500000
 
 static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp);
 static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols);
@@ -726,6 +727,75 @@ static ERL_NIF_TERM load_image_as_tensor(ErlNifEnv *env, int argc, const ERL_NIF
 
 }
 
+static ERL_NIF_TERM load_csv_as_matrix(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  ERL_NIF_TERM mat_ret;
+  ErlNifBinary filepath;
+  enif_inspect_binary(env,argv[0], &filepath);
+  char* file = enif_alloc(filepath.size+1);
+  memset(file, 0, filepath.size+1);
+  memcpy(file, (void *) filepath.data, filepath.size);
+  char buf_init[BUF_SIZE], buf[BUF_SIZE];
+  char *val_init, *line_init, *val, *line;
+
+  unsigned int header_atom_len;
+  enif_get_atom_length(env, argv[1], &header_atom_len, ERL_NIF_LATIN1);
+  char* header_atom = (char*)enif_alloc(header_atom_len + 1);
+  enif_get_atom(env, argv[1], header_atom, header_atom_len + 1, ERL_NIF_LATIN1);
+
+  ErlNifBinary delimiter;
+  enif_inspect_binary(env,argv[2], &delimiter);
+  char* delimiter_str = enif_alloc(delimiter.size+1);
+  memset(delimiter_str, 0, delimiter.size+1);
+  memcpy(delimiter_str, (void *) delimiter.data, delimiter.size);
+  
+  FILE *f_init = fopen(file, "rb");
+  unsigned i = 0, j = 0;
+  while((line_init=fgets(buf_init,sizeof(buf_init),f_init))!=NULL) {
+     j = 0;
+     val_init = strtok(line_init,delimiter_str);
+     while(val_init != NULL) {
+	 val_init = strtok(NULL,delimiter_str);
+         j++;
+     }
+     i++;
+  }
+  fclose(f_init);
+  
+  int flag = 0;
+  if(strcmp(header_atom, "true") == 0) {
+     i--;
+     flag = 1;
+  }
+  
+  mx_t mx;
+  mx.p = alloc_matrix(env, i, j);
+  FILE *f = fopen(file, "rb");
+  i = 0;
+  while((line=fgets(buf,sizeof(buf),f))!=NULL) {
+     j = 0;
+     val = strtok(line,delimiter_str);
+     while(val != NULL) {
+	 if(flag == 0) {
+           POS(mx.p, i, j) = atof(val);
+	   j++;
+	 }
+	 val = strtok(NULL,delimiter_str);
+     }
+
+     if(flag == 1){
+         flag = 0;
+   	 i--;
+     }
+     i++;
+  }
+  fclose(f);
+  
+  mat_ret = enif_make_resource(env, mx.p);
+  enif_release_resource(mx.p);
+  return mat_ret;
+}
+
 
 static ErlNifFunc nif_funcs[] =
   {
@@ -747,6 +817,7 @@ static ErlNifFunc nif_funcs[] =
     { "float32_tensor_alloc", 1, float32_tensor_alloc },
     { "run_session", 5, run_session },
     { "load_image_as_tensor", 1, load_image_as_tensor },
+    { "load_csv_as_matrix", 3, load_csv_as_matrix },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex.NIFs, nif_funcs, res_loader, NULL, NULL, NULL)

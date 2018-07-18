@@ -105,6 +105,28 @@ defmodule Tensorflex do
     {:ok, %Tensor{datatype: :tf_uint8, tensor: ref}}
   end
 
+  def load_csv_as_matrix(filepath, opts \\ []) do
+    unless File.exists?(filepath) do
+      raise ArgumentError, "csv file does not exist"
+    end
+
+    unless (Path.extname(filepath) == ".csv") do
+      raise ArgumentError, "file is not a CSV file"
+    end
+
+    defaults = [header: :true, delimiter: ","]
+    opts = Keyword.merge(defaults, opts) |> Enum.into(%{})
+    %{header: header, delimiter: delimiter} = opts
+    
+    if(header != :true and header != :false) do
+      raise ArgumentError, "header indicator atom must be either :true or :false"
+    end
+
+    ref = NIFs.load_csv_as_matrix(filepath, header, delimiter)
+    {nrows, ncols} = NIFs.size_of_matrix(ref)
+    %Matrix{nrows: nrows, ncols: ncols, data: ref}
+  end
+
   def run_session(%Graph{def: graphdef, name: filepath}, %Tensor{datatype: input_datatype, tensor: input_ref}, %Tensor{datatype: output_datatype, tensor: output_ref}, input_opname, output_opname) do
     NIFs.run_session(graphdef, input_ref, output_ref, input_opname, output_opname)
   end
