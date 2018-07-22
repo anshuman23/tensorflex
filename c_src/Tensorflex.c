@@ -552,6 +552,54 @@ static ERL_NIF_TERM float32_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM 
   return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
 }
 
+static ERL_NIF_TERM int32_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc = enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  if (enif_is_number(env, argv[0])) {
+    void *val = enif_alloc(sizeof(int32_t));
+    if (enif_get_double(env, argv[0], val)) {
+      tensor = TF_NewTensor(TF_INT32, 0, 0, val, sizeof(int32_t), tensor_deallocator, 0);
+    } else return enif_make_badarg(env);
+  }
+
+  else {
+    mx_t mx1, mx2;
+    if (!enif_get_resource(env, argv[0], resource_type, &mx1.vp) || !enif_get_resource(env, argv[1], resource_type, &mx2.vp) || mx2.p->nrows > 1) {
+	return enif_make_badarg(env);
+    }
+
+    int ndims = (int)(mx2.p->ncols);
+
+    unsigned i,j;
+    int64_t dims[mx2.p->ncols];
+    int size_alloc = 1;
+    for (i = 0; i < mx2.p->nrows; i++) {
+	for (j = 0; j < mx2.p->ncols; j++) {
+	    size_alloc = size_alloc * POS(mx2.p, i, j);
+            dims[j] = POS(mx2.p, i, j);
+	}
+    }
+
+    int32_t *data = enif_alloc((mx1.p->nrows)*(mx1.p->ncols)*sizeof(int32_t));
+    for (i = 0; i < mx1.p->nrows; i++) {
+	for (j = 0; j < mx1.p->ncols; j++) {
+	    data[(i)*(mx1.p->ncols) + (j)] = (int32_t) POS(mx1.p, i, j);
+	}
+    }
+
+    tensor = TF_NewTensor(TF_INT32, dims, ndims, data, (size_alloc) * sizeof(int32_t), tensor_deallocator, 0);
+
+  }
+
+  memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+  return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
+}
+
+
 static ERL_NIF_TERM allocate_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[], char* datatype) 
 {
   TF_Tensor *tensor;
@@ -578,6 +626,9 @@ static ERL_NIF_TERM allocate_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   }
   else if(strcmp(datatype, "TF_DOUBLE") == 0) {
 	tensor = TF_AllocateTensor(TF_DOUBLE, dims, ndims, (size_alloc)* sizeof(double));
+  }
+  else if(strcmp(datatype, "TF_INT32") == 0) {
+	tensor = TF_AllocateTensor(TF_INT32, dims, ndims, (size_alloc)* sizeof(int32_t));
   } else return enif_make_badarg(env);
 
   memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
@@ -585,6 +636,11 @@ static ERL_NIF_TERM allocate_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   enif_release_resource(tensor_resource_alloc);
   return enif_make_tuple2(env, enif_make_atom(env,"ok"), new_tensor);
   
+}
+
+static ERL_NIF_TERM int32_tensor_alloc(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  return allocate_tensor(env, argc, argv, "TF_INT32");
 }
 
 static ERL_NIF_TERM float32_tensor_alloc(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) 
@@ -811,10 +867,13 @@ static ErlNifFunc nif_funcs[] =
     { "float64_tensor", 1, float64_tensor },
     { "float32_tensor", 2, float32_tensor },
     { "float32_tensor", 1, float32_tensor },
+    { "int32_tensor", 2, int32_tensor },
+    { "int32_tensor", 1, int32_tensor },
     { "string_tensor", 1, string_tensor },
     { "tensor_datatype", 1, tensor_datatype },
     { "float64_tensor_alloc", 1, float64_tensor_alloc },
     { "float32_tensor_alloc", 1, float32_tensor_alloc },
+    { "int32_tensor_alloc", 1, int32_tensor_alloc },
     { "run_session", 5, run_session },
     { "load_image_as_tensor", 1, load_image_as_tensor },
     { "load_csv_as_matrix", 3, load_csv_as_matrix },
