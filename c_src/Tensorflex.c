@@ -559,7 +559,7 @@ static ERL_NIF_TERM int32_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
 
   if (enif_is_number(env, argv[0])) {
     void *val = enif_alloc(sizeof(int32_t));
-    if (enif_get_double(env, argv[0], val)) {
+    if (enif_get_int(env, argv[0], val)) {
       tensor = TF_NewTensor(TF_INT32, 0, 0, val, sizeof(int32_t), tensor_deallocator, 0);
     } else return enif_make_badarg(env);
   }
