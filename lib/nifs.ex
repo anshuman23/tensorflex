@@ -53,12 +53,24 @@ defmodule Tensorflex.NIFs do
     raise "NIF float_tensor32/2 not implemented"
   end
 
+  def int32_tensor(_values, _dims) do
+    raise "NIF int32_tensor/2 not implemented"
+  end
+
+  def int32_tensor(_int) do
+    raise "NIF int32_tensor/1 not implemented"
+  end
+
   def string_tensor(_string) do
     raise "NIF string_tensor/1 not implemented"
   end
 
   def tensor_datatype(_tensor) do
     raise "NIF tensor_datatype/1 not implemented"
+  end
+
+  def int32_tensor_alloc(_dims) do
+    raise "NIF int32_tensor_alloc/1 not implemented"
   end
 
   def float32_tensor_alloc(_dims) do

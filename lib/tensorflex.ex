@@ -73,11 +73,26 @@ defmodule Tensorflex do
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}}
   end
 
+  def int32_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.int32_tensor(val_ref, dim_ref)
+    {:ok, %Tensor{datatype: :tf_int32, tensor: ref}} 
+  end
+
+  def int32_tensor(intval) when is_integer(intval) do
+    {:ok, ref} = NIFs.int32_tensor(intval)
+    {:ok, %Tensor{datatype: :tf_int32, tensor: ref}}
+  end
+
   def string_tensor(stringval) when is_binary(stringval) do
     {:ok, ref} = NIFs.string_tensor(stringval)
     {:ok, %Tensor{datatype: :tf_string, tensor: ref}}
   end
 
+  def int32_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+    {:ok, ref} = NIFs.int32_tensor_alloc(dim_ref)
+    {:ok, %Tensor{datatype: :tf_int32, tensor: ref}} 
+  end
+  
   def float32_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.float32_tensor_alloc(dim_ref)
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
