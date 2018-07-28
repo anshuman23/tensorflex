@@ -64,7 +64,7 @@ Tensorflex contains three main structs which handle different datatypes. These a
 
   - Returns the extended and modified `%Matrix` struct matrix.
 
-- ``matrix_to_lists/1`:
+- `matrix_to_lists/1`:
   - Converts a Tensorflex matrix (back) to a list of lists format.
 
   - Takes a Tensorflex `%Matrix` struct matrix as input.
@@ -137,6 +137,8 @@ Tensorflex contains three main structs which handle different datatypes. These a
 
 ### Examples
 Examples are generally added in full description on my blog [here](http://anshumanc.ml). A blog post covering how to do classification on the Iris Dataset is present [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/).
+
+--- 
 
 __INCEPTION CNN MODEL EXAMPLE__:
 
@@ -216,7 +218,9 @@ iex(7)> Enum.find_index(results |> List.flatten, fn(x) -> x == max_prob end)
 
 We can thus see that the class with the maximum probability predicted (__0.8849328756332397__) for the image is __169__. We will now find what the 169 label corresponds to. For this we can look back into the unzipped Inception folder, where there is a file called `imagenet_2012_challenge_label_map_proto.pbtxt`. On opening this file, we can find the string class identifier for the `169` class index. This is `n02510455` and is present on Line 1556 in the file. Finally, we need to match this string identifier to a set of identification labels by referring to the file `imagenet_synset_to_human_label_map.txt` file. Here we can see that corresponding to the string class `n02510455` the human labels are `giant panda, panda, panda bear, coon bear, Ailuropoda melanoleuca` (Line 3691 in the file). 
 
-Thus, we have correctly identified the animal in the image as a panda using Tensorflex! 
+Thus, we have correctly identified the animal in the image as a panda using Tensorflex!
+
+---
     
 __RNN LSTM SENTIMENT ANALYSIS MODEL EXAMPLE__:
 
