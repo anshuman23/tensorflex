@@ -10,20 +10,20 @@ projects.
 
   - Make sure that the C API version and Python API version (assuming you are
     using the Python API for first training your models) are the latest. As of
-July 2018, the latest version is `r1.9`.
+    July 2018, the latest version is `r1.9`.
 
   - Since Tensorflex provides Inference capability for pre-trained graph
     models, it is assumed you have adequate knowledge of the pre-trained models
-you are using (such as the input data type/dimensions, input and output
-operation names, etc.). Some basic understanding of the [Tensorflow Python
-API](https://www.tensorflow.org/api_docs/python/) can come in very handy. 
+    you are using (such as the input data type/dimensions, input and output
+    operation names, etc.). Some basic understanding of the [Tensorflow Python
+    API](https://www.tensorflow.org/api_docs/python/) can come in very handy. 
 
   - Tensorflex consists of multiple NIFs, so exercise caution while using it--
     providing incorrect operation names for running sessions, incorrect
-dimensions of tensors than the actual pre-trained graph requires, providing
-different tensor datatypes than the ones required by the graph can all lead to
-failure. While these are not easy errors to make, do ensure that you test your
-solution well before deployment.  
+    dimensions of tensors than the actual pre-trained graph requires, providing
+    different tensor datatypes than the ones required by the graph can all lead to
+    failure. While these are not easy errors to make, do ensure that you test your
+    solution well before deployment.  
 """
   
   alias Tensorflex.{NIFs, Graph, Tensor, Matrix}
@@ -48,10 +48,11 @@ file and the binary definition data that is read in via the `.pb` file.
   _Reading in a graph_
 
   As an example, we can try reading in the
-[Inception](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz)
-convolutional neural network based image classification graph model by Google.
-The graph file is named `classify_image_graph_def.pb`: 
-```elixir
+  [Inception](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz)
+  convolutional neural network based image classification graph model by Google.
+  The graph file is named `classify_image_graph_def.pb`: 
+
+  ```elixir
   iex(1)> {:ok, graph} = Tensorflex.read_graph "classify_image_graph_def.pb"
   2018-07-23 15:31:35.949345: W tensorflow/core/framework/op_def_util.cc:346] Op BatchNormWithGlobalNormalization is deprecated. It will cease to work in GraphDef version 9. Use tf.nn.batch_normalization().
   {:ok,
@@ -61,8 +62,8 @@ The graph file is named `classify_image_graph_def.pb`:
   }}
   ```
   Generally to check that the loaded graph model is correct and contains
-computational operations, the `get_graph_ops/1` function is useful: 
-```elixir
+  computational operations, the `get_graph_ops/1` function is useful: 
+  ```elixir
   iex(2)> Tensorflex.get_graph_ops graph
   ["DecodeJpeg/contents", "DecodeJpeg", "Cast", "ExpandDims/dim", "ExpandDims",
    "ResizeBilinear/size", "ResizeBilinear", "Sub/y", "Sub", "Mul/y", "Mul",
@@ -116,7 +117,7 @@ computational operations, the `get_graph_ops/1` function is useful:
   Reads in a Tensorflex ```%Graph``` struct obtained from `read_graph/1`.
 
   Returns a list of all the operation names (as strings) that populate the
-graph model.
+  graph model.
 
   ## Examples
 
@@ -224,8 +225,8 @@ graph model.
   Creates a 2-D Tensorflex matrix from custom input specifications.
 
   Takes three input arguments: number of rows in matrix (`nrows`), number of
-columns in matrix (`ncols`), and a list of lists of the data that will form the
-matrix (`datalist`).
+  columns in matrix (`ncols`), and a list of lists of the data that will form the
+  matrix (`datalist`).
 
   Returns a `%Matrix` Tensorflex struct type.
 
@@ -243,8 +244,8 @@ matrix (`datalist`).
   ```
 
   All `%Matrix` Tensorflex matrices can be passed in to the other matrix
-inspection and manipulation functions-- `matrix_pos/3`,`size_of_matrix/1`,
-`matrix_to_lists/1`, and `append_to_matrix/2`:
+  inspection and manipulation functions-- `matrix_pos/3`,`size_of_matrix/1`,
+  `matrix_to_lists/1`, and `append_to_matrix/2`:
 
   ```elixir
   iex(1)> mat = Tensorflex.create_matrix(4,4,[[123,431,23,1],[1,2,3,4],[5,6,7,8],[768,564,44,5]])
@@ -318,8 +319,8 @@ inspection and manipulation functions-- `matrix_pos/3`,`size_of_matrix/1`,
   Used for accessing an element of a Tensorflex matrix. 
 
   Takes in three input arguments: a Tensorflex `%Matrix` struct matrix, and the
-row (`row`) and column (`col`) values of the required element in the matrix.
-Both `row` and `col` here are __NOT__ zero indexed.
+  row (`row`) and column (`col`) values of the required element in the matrix.
+  Both `row` and `col` here are __NOT__ zero indexed.
 
   Returns the value as float.
 
@@ -351,8 +352,8 @@ Both `row` and `col` here are __NOT__ zero indexed.
 
   Takes a Tensorflex `%Matrix` struct matrix as input.
 
-Returns a tuple `{nrows, ncols}` where `nrows` represents the number of rows of
-the matrix and `ncols` represents the number of columns of the matrix.
+  Returns a tuple `{nrows, ncols}` where `nrows` represents the number of rows of
+  the matrix and `ncols` represents the number of columns of the matrix.
 
   ## Examples
 
@@ -377,8 +378,8 @@ the matrix and `ncols` represents the number of columns of the matrix.
   Appends a single row to the back of a Tensorflex matrix.
 
   Takes a Tensorflex `%Matrix` matrix as input and a single row of data (with
-the same number of columns as the original matrix) as a list of lists
-(`datalist`) to append to the original matrix.
+  the same number of columns as the original matrix) as a list of lists
+  (`datalist`) to append to the original matrix.
 
   Returns the extended and modified `%Matrix` struct matrix.
 
@@ -440,9 +441,9 @@ the same number of columns as the original matrix) as a list of lists
   Returns a list of lists representing the data stored in the matrix.
 
   __NOTE__: If the matrix contains very high dimensional data, typically
-obtained from a function like `load_csv_as_matrix/2`, then it is not
-recommended to convert the matrix back to a list of lists format due to a
-possibility of memory errors.
+  obtained from a function like `load_csv_as_matrix/2`, then it is not
+  recommended to convert the matrix back to a list of lists format due to a
+  possibility of memory errors.
 
   ## Examples
 
@@ -458,14 +459,14 @@ possibility of memory errors.
 
   @doc """
   Creates a `TF_DOUBLE` tensor from Tensorflex matrices containing the values
-and dimensions specified.
+  and dimensions specified.
 
   Takes two arguments: a `%Matrix` matrix (`matrix1`) containing the values the
-tensor should have and another `%Matrix` matrix (`matrix2`) containing the
-dimensions of the required tensor.
+  tensor should have and another `%Matrix` matrix (`matrix2`) containing the
+  dimensions of the required tensor.
 
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples:
 
@@ -501,12 +502,12 @@ Tensorflex struct type that is used for holding tensor data and type.
 
   @doc """
   Creates a `TF_DOUBLE` constant value one-dimensional tensor from the floating
-point value specified.
+  point value specified.
 
   Takes in a float value as input.
 
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples
 
@@ -538,14 +539,14 @@ Tensorflex struct type that is used for holding tensor data and type.
 
   @doc """
   Creates a `TF_FLOAT` tensor from Tensorflex matrices containing the values
-and dimensions specified.
+  and dimensions specified.
 
   Takes two arguments: a `%Matrix` matrix (`matrix1`) containing the values the
-tensor should have and another `%Matrix` matrix (`matrix2`) containing the
-dimensions of the required tensor.
+  tensor should have and another `%Matrix` matrix (`matrix2`) containing the
+  dimensions of the required tensor.
 
-Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples:
 
@@ -581,12 +582,12 @@ Tensorflex struct type that is used for holding tensor data and type.
 
   @doc """
   Creates a `TF_FLOAT` constant value one-dimensional tensor from the floating
-point value specified.
+  point value specified.
   
   Takes in a float value as input.
   
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples
 
@@ -618,18 +619,18 @@ Tensorflex struct type that is used for holding tensor data and type.
 
   @doc """
   Creates a `TF_INT32` tensor from Tensorflex matrices containing the values
-and dimensions specified.
+  and dimensions specified.
   
   Takes two arguments: a `%Matrix` matrix (`matrix1`) containing the values the
-tensor should have and another `%Matrix` matrix (`matrix2`) containing the
-dimensions of the required tensor.
+  tensor should have and another `%Matrix` matrix (`matrix2`) containing the
+  dimensions of the required tensor.
 
-Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
+  Tensorflex struct type that is used for holding tensor data and type.
 
   __NOTE__: In case floating point values are passed in the values matrix
-(`matrix1`) as arguments for this function, the tensor will still be created
-and all the float values will be typecast to integers. 
+  (`matrix1`) as arguments for this function, the tensor will still be created
+  and all the float values will be typecast to integers. 
 
   ## Examples:
 
@@ -665,12 +666,12 @@ and all the float values will be typecast to integers.
 
   @doc """
   Creates a `TF_INT32` constant value one-dimensional tensor from the integer
-value specified.
+  value specified.
   
   Takes in an integer value as input.
   
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples
 
@@ -702,12 +703,12 @@ Tensorflex struct type that is used for holding tensor data and type.
 
   @doc """
   Creates a `TF_STRING` constant value string tensor from the string value
-specified.
+  specified.
   
   Takes in a string value as input.
   
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding tensor data and type.
+  Tensorflex struct type that is used for holding tensor data and type.
 
   ## Examples
 
@@ -741,21 +742,21 @@ Tensorflex struct type that is used for holding tensor data and type.
   Allocates a `TF_INT32` tensor of specified dimensions.
 
   This function is generally used to allocate output tensors that do not hold
-any value data yet, but _will_ after the session is run for Inference. Output
-tensors of the required dimensions are allocated and then passed to the
-`run_session/5` function to hold the output values generated as predictions.
+  any value data yet, but _will_ after the session is run for Inference. Output
+  tensors of the required dimensions are allocated and then passed to the
+  `run_session/5` function to hold the output values generated as predictions.
 
   Takes a Tensorflex `%Matrix` struct matrix as input.
 
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding the potential tensor data and
-type.
+  Tensorflex struct type that is used for holding the potential tensor data and
+  type.
 
   ## Examples
   
   As an example, we can allocate an `int32` output tensor that will be a vector
-of 250 values (`1x250` matrix). Therefore, after the session is run, the output
-will be an `integer` vector containing 250 values:
+  of 250 values (`1x250` matrix). Therefore, after the session is run, the output
+  will be an `integer` vector containing 250 values:
   
   ```elixir
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.int32_tensor_alloc
@@ -777,21 +778,21 @@ will be an `integer` vector containing 250 values:
   Allocates a `TF_FLOAT` tensor of specified dimensions.
   
   This function is generally used to allocate output tensors that do not hold
-any value data yet, but _will_ after the session is run for Inference. Output
-tensors of the required dimensions are allocated and then passed to the
-`run_session/5` function to hold the output values generated as predictions.
+  any value data yet, but _will_ after the session is run for Inference. Output
+  tensors of the required dimensions are allocated and then passed to the
+  `run_session/5` function to hold the output values generated as predictions.
 
   Takes a Tensorflex `%Matrix` struct matrix as input.
 
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding the potential tensor data and
-type.
+  Tensorflex struct type that is used for holding the potential tensor data and
+  type.
 
   ## Examples
   
   As an example, we can allocate a `float32` output tensor that will be a
-vector of 250 values (`1x250` matrix). Therefore, after the session is run, the
-output will be a `float` vector containing 250 values:
+  vector of 250 values (`1x250` matrix). Therefore, after the session is run, the
+  output will be a `float` vector containing 250 values:
   
   ```elixir
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.float32_tensor_alloc
@@ -812,22 +813,22 @@ output will be a `float` vector containing 250 values:
   @doc """
   Allocates a `TF_DOUBLE` tensor of specified dimensions.
   
-    This function is generally used to allocate output tensors that do not hold
-any value data yet, but _will_ after the session is run for Inference. Output
-tensors of the required dimensions are allocated and then passed to the
-`run_session/5` function to hold the output values generated as predictions.
+  This function is generally used to allocate output tensors that do not hold
+  any value data yet, but _will_ after the session is run for Inference. Output
+  tensors of the required dimensions are allocated and then passed to the
+  `run_session/5` function to hold the output values generated as predictions.
     
-    Takes a Tensorflex `%Matrix` struct matrix as input.
+  Takes a Tensorflex `%Matrix` struct matrix as input.
     
-    Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding the potential tensor data and
-type.
+  Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
+  Tensorflex struct type that is used for holding the potential tensor data and
+  type.
 
   ## Examples
   
   As an example, we can allocate a `float64` output tensor that will be a
-vector of 250 values (`1x250` matrix). Therefore, after the session is run, the
-output will be a `double` vector containing 250 values:
+  vector of 250 values (`1x250` matrix). Therefore, after the session is run, the
+  output will be a `double` vector containing 250 values:
   
   ```elixir
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.float64_tensor_alloc
@@ -851,9 +852,9 @@ output will be a `double` vector containing 250 values:
   Takes in a `%Tensor` struct tensor as input.
 
   Returns a tuple `{:ok, datatype}` where `datatype` is an atom representing
-the list of Tensorflow `TF_DataType` tensor datatypes. Click
-[here](https://github.com/anshuman23/tensorflex/blob/master/c_src/c_api.h#L98-L122)
-to view a list of all possible datatypes.
+  the list of Tensorflow `TF_DataType` tensor datatypes. Click
+  [here](https://github.com/anshuman23/tensorflex/blob/master/c_src/c_api.h#L98-L122)
+  to view a list of all possible datatypes.
   
   ## Examples
   
@@ -876,37 +877,37 @@ to view a list of all possible datatypes.
 
   @doc """
   Loads `JPEG` images into Tensorflex directly as a `TF_UINT8` tensor of
-dimensions `image height x image width x number of color channels`.
+  dimensions `image height x image width x number of color channels`.
 
   This function is very useful if you wish to do image classification using
-Convolutional Neural Networks, or other Deep Learning Models. One of the most
-widely adopted and robust image classification models is the
-[Inception](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz)
-model by Google. It makes classifications on images from over a 1000 classes
-with highly accurate results. The `load_image_as_tensor/1` function is an
-essential component for the prediction pipeline of the Inception model (and for
-other similar image classification models) to work in Tensorflex.
+  Convolutional Neural Networks, or other Deep Learning Models. One of the most
+  widely adopted and robust image classification models is the
+  [Inception](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz)
+  model by Google. It makes classifications on images from over a 1000 classes
+  with highly accurate results. The `load_image_as_tensor/1` function is an
+  essential component for the prediction pipeline of the Inception model (and for
+  other similar image classification models) to work in Tensorflex.
 
   Reads in the path to a `JPEG` image file (`.jpg` or `.jpeg`).
 
   Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
-Tensorflex struct type that is used for holding the tensor data and type. Here
-the created Tensor is a `uint8` tensor (`TF_UINT8`).
+  Tensorflex struct type that is used for holding the tensor data and type. Here
+  the created Tensor is a `uint8` tensor (`TF_UINT8`).
 
   __NOTE__: For now, only 3 channel RGB `JPEG` color images can be passed as
-arguments. Support for grayscale images and other image formats such as `PNG`
-will be added in the future. 
+  arguments. Support for grayscale images and other image formats such as `PNG`
+  will be added in the future. 
 
 ## Examples
 
   To exemplify the working of the `load_image_as_tensor/1` function we will
-cover the entire prediction pipeline for the Inception model. However, this
-makes use of many other Tensorflex functions such as `run_session/5` and the
-other tensor functions so it would be advisable to go through them first. Also,
-the Inception model can be downloaded
-[here](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz).
-We will be making use of the `cropped_panda.jpg` image file that comes along
-with the model to test out the model in Tensorflex.
+  cover the entire prediction pipeline for the Inception model. However, this
+  makes use of many other Tensorflex functions such as `run_session/5` and the
+  other tensor functions so it would be advisable to go through them first. Also,
+  the Inception model can be downloaded
+  [here](http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz).
+  We will be making use of the `cropped_panda.jpg` image file that comes along
+  with the model to test out the model in Tensorflex.
 
   First the graph is loaded:
 
@@ -930,8 +931,8 @@ with the model to test out the model in Tensorflex.
   }}
   ```
   Then we create the output tensor which will hold out output vector values.
-For the Inception model, the output is received as a `1008x1 float32` tensor,
-as there are 1008 classes in the model:
+  For the Inception model, the output is received as a `1008x1 float32` tensor,
+  as there are 1008 classes in the model:
   
   ```elixir
   iex(3)> {:ok, output_tensor} = Tensorflex.create_matrix(1,2,[[1008,1]]) |> Tensorflex.float32_tensor_alloc
@@ -968,10 +969,10 @@ as there are 1008 classes in the model:
   
   ```
   Finally, we need to find which class has the maximum probability and identify
-it's label. Since `results` is a List of Lists, it's better to read in the
-flattened list. Then we need to find the index of the element in the new list
-which as the maximum value. Therefore: 
-```elixir
+  it's label. Since `results` is a List of Lists, it's better to read in the
+  flattened list. Then we need to find the index of the element in the new list
+  which as the maximum value. Therefore: 
+  ```elixir
   iex(5)> max_prob = List.flatten(results) |> Enum.max
   0.8849328756332397
   
@@ -979,18 +980,18 @@ which as the maximum value. Therefore:
   169
   ```
   We can thus see that the class with the maximum probability predicted
-(`0.8849328756332397`) for the image is `169`. We will now find what the `169`
-label corresponds to. For this we can look back into the unzipped Inception
-folder, where there is a file called
-`imagenet_2012_challenge_label_map_proto.pbtxt`. On opening this file, we can
-find the string class identifier for the `169` class index. This is `n02510455`
-and is present on Line 1556 in the file. Finally, we need to match this string
-identifier to a set of identification labels by referring to the file
-`imagenet_synset_to_human_label_map.txt` file. Here we can see that
-corresponding to the string class `n02510455` the human labels are `giant
-panda, panda, panda bear, coon bear, Ailuropoda melanoleuca` (Line 3691 in the
-file). Thus, we have correctly identified the animal in the image as a panda
-using Tensorflex.  
+  (`0.8849328756332397`) for the image is `169`. We will now find what the `169`
+  label corresponds to. For this we can look back into the unzipped Inception
+  folder, where there is a file called
+  `imagenet_2012_challenge_label_map_proto.pbtxt`. On opening this file, we can
+  find the string class identifier for the `169` class index. This is `n02510455`
+  and is present on Line 1556 in the file. Finally, we need to match this string
+  identifier to a set of identification labels by referring to the file
+  `imagenet_synset_to_human_label_map.txt` file. Here we can see that
+  corresponding to the string class `n02510455` the human labels are `giant
+  panda, panda, panda bear, coon bear, Ailuropoda melanoleuca` (Line 3691 in the
+  file). Thus, we have correctly identified the animal in the image as a panda
+  using Tensorflex.  
 """
 
   def load_image_as_tensor(imagepath) do
@@ -1008,33 +1009,33 @@ using Tensorflex.
 
   @doc """
   Loads high-dimensional data from a `CSV` file as a Tensorflex 2-D matrix in a
-super-fast manner.
+  super-fast manner.
 
   The `load_csv_as_matrix/2` function is very fast-- when compared with the
-Python based `pandas` library for data science and analysis' function
-`read_csv` on the `test.csv` file from MNIST Kaggle data
-([source](https://www.kaggle.com/c/digit-recognizer/data)), the following
-execution times were obtained:
-  - `read_csv`: `2.549233` seconds
-  - `load_csv_as_matrix/2`: `1.711494` seconds
+  Python based `pandas` library for data science and analysis' function
+  `read_csv` on the `test.csv` file from MNIST Kaggle data
+  ([source](https://www.kaggle.com/c/digit-recognizer/data)), the following
+  execution times were obtained:
+    - `read_csv`: `2.549233` seconds
+    - `load_csv_as_matrix/2`: `1.711494` seconds
 
   This function takes in 2 arguments: a path to a valid CSV file (`filepath`)
-and other optional arguments `opts`. These include whether or not a header
-needs to be discarded in the CSV, and what the delimiter type is. These are
-specified by passing in an atom `:true` or `:false` to the `header:` key, and
-setting a string value for the `delimiter:` key. By default, the header is
-considered to be present (`:true`) and the delimiter is set to `,`.
+  and other optional arguments `opts`. These include whether or not a header
+  needs to be discarded in the CSV, and what the delimiter type is. These are
+  specified by passing in an atom `:true` or `:false` to the `header:` key, and
+  setting a string value for the `delimiter:` key. By default, the header is
+  considered to be present (`:true`) and the delimiter is set to `,`. 
 
   Returns a `%Matrix` Tensorflex struct type.
 
   ## Examples:
   We first exemplify the working with the `test.csv` file which belongs to the
-MNIST Kaggle CSV data
-([source](https://www.kaggle.com/c/digit-recognizer/data)), which contains
-`28000` rows and `784` columns (without the header). It is comma delimited and
-also contains a header. From the `test.csv` file, we also create a custom file
-withou the header present which we refer to as `test_without_header.csv` in the
-examples below:
+  MNIST Kaggle CSV data
+  ([source](https://www.kaggle.com/c/digit-recognizer/data)), which contains
+  `28000` rows and `784` columns (without the header). It is comma delimited and
+  also contains a header. From the `test.csv` file, we also create a custom file
+  without the header present which we refer to as `test_without_header.csv` in the
+  examples below:
 
   ```elixir
   iex(1)> mat = Tensorflex.load_csv_as_matrix("test.csv")
@@ -1052,9 +1053,9 @@ examples below:
   ```
   
   On a visual inspection of the very large `test.csv` file, one can see that
-the values in these particular positions are correct. Now we show usage for the
-same file but without header, `test_without_header.csv`: 
-```elixir
+  the values in these particular positions are correct. Now we show usage for the
+  same file but without header, `test_without_header.csv`: 
+  ```elixir
   iex(1)> no_header = Tensorflex.load_csv_as_matrix("test/test_without_header.csv", header: :false)    
   %Tensorflex.Matrix{
     data: #Reference<0.4024686574.590479364.257078>,
@@ -1070,7 +1071,7 @@ same file but without header, `test_without_header.csv`:
   ```
 
   Next we see the delimiter functionalities. First, assuming we have two simple
-`CSV` files, `sample1.csv` and `sample2.csv`
+  `CSV` files, `sample1.csv` and `sample2.csv`
 
   _sample1.csv_:
 
@@ -1148,39 +1149,39 @@ same file but without header, `test_without_header.csv`:
 
   @doc """
   Runs a Tensorflow session to generate predictions for a given graph, input
-data, and required input/output operations.
+  data, and required input/output operations.
 
   This function is the final step of the Inference (prediction) pipeline and
-generates output for a given set of input data, a pre-trained graph model, and
-the specified input and output operations of the graph.
+  generates output for a given set of input data, a pre-trained graph model, and
+  the specified input and output operations of the graph.
 
   Takes in five arguments: a pre-trained Tensorflow graph `.pb` model read in
-from the `read_graph/1` function (`graph`), an input tensor with the dimensions
-and data required for the input operation of the graph to run (`tensor1`), an
-output tensor allocated with the right dimensions (`tensor2`), the name of the
-input operation of the graph that needs where the input data is fed
-(`input_opname`), and the output operation name in the graph where the outputs
-are obtained (`output_opname`). The input tensor is generally created from the
-matrices manually or using the `load_csv_as_matrix/2` function, and then passed
-through to one of the tensor creation functions. For image classification the
-`load_image_as_tensor/1` can also be used to create the input tensor from an
-image. The output tensor is created using the tensor allocation functions
-(generally containing `alloc` at the end of the function name).  
+  from the `read_graph/1` function (`graph`), an input tensor with the dimensions
+  and data required for the input operation of the graph to run (`tensor1`), an
+  output tensor allocated with the right dimensions (`tensor2`), the name of the
+  input operation of the graph that needs where the input data is fed
+  (`input_opname`), and the output operation name in the graph where the outputs
+  are obtained (`output_opname`). The input tensor is generally created from the
+  matrices manually or using the `load_csv_as_matrix/2` function, and then passed
+  through to one of the tensor creation functions. For image classification the
+  `load_image_as_tensor/1` can also be used to create the input tensor from an
+  image. The output tensor is created using the tensor allocation functions
+  (generally containing `alloc` at the end of the function name).  
 
   Returns a List of Lists (similar to the `matrix_to_lists/1` function)
-containing the generated predictions as per the output tensor dimensions.
+  containing the generated predictions as per the output tensor dimensions.
 
-## Examples
-  
-  - A blog post [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/) covers
+  These examples can be observed for understanding the prediction pipeline: 
+
+  * A blog post [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/) covers
     generating predictions and running sessions using an MLP model on the Iris
-Dataset
+    Dataset
 
-  - Generating predictions from the Inception model by Google is covered in the
-    `load_image_as_tensor/1` function examples.
+  * Generating predictions from the Inception model by Google is covered in the
+     `load_image_as_tensor/1` function examples.
 
-  - Working with an RNN-LSTM example for sentiment analysis is covered
-    [here](https://github.com/anshuman23/tensorflex/pull/25).  
+  * Working with an RNN-LSTM example for sentiment analysis is covered
+     [here](https://github.com/anshuman23/tensorflex/pull/25).  
 """
 
   def run_session(%Graph{def: graphdef, name: filepath}, %Tensor{datatype: input_datatype, tensor: input_ref}, %Tensor{datatype: output_datatype, tensor: output_ref}, input_opname, output_opname) do
