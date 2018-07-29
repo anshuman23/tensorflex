@@ -56,8 +56,8 @@ The graph file is named `classify_image_graph_def.pb`:
   2018-07-23 15:31:35.949345: W tensorflow/core/framework/op_def_util.cc:346] Op BatchNormWithGlobalNormalization is deprecated. It will cease to work in GraphDef version 9. Use tf.nn.batch_normalization().
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.3018278404.759824385.5268>,
-  name: "classify_image_graph_def.pb"
+    def: #Reference<0.3018278404.759824385.5268>,
+    name: "classify_image_graph_def.pb"
   }}
   ```
   Generally to check that the loaded graph model is correct and contains
@@ -65,21 +65,21 @@ computational operations, the `get_graph_ops/1` function is useful:
 ```elixir
   iex(2)> Tensorflex.get_graph_ops graph
   ["DecodeJpeg/contents", "DecodeJpeg", "Cast", "ExpandDims/dim", "ExpandDims",
-  "ResizeBilinear/size", "ResizeBilinear", "Sub/y", "Sub", "Mul/y", "Mul",
-  "conv/conv2d_params", "conv/Conv2D", "conv/batchnorm/beta",
-  "conv/batchnorm/gamma", "conv/batchnorm/moving_mean",
-  "conv/batchnorm/moving_variance", "conv/batchnorm", "conv/CheckNumerics",
-  "conv/control_dependency", "conv", "conv_1/conv2d_params", "conv_1/Conv2D",
-  "conv_1/batchnorm/beta", "conv_1/batchnorm/gamma",
-  "conv_1/batchnorm/moving_mean", "conv_1/batchnorm/moving_variance",
-  "conv_1/batchnorm", "conv_1/CheckNumerics", "conv_1/control_dependency",
-  "conv_1", "conv_2/conv2d_params", "conv_2/Conv2D", "conv_2/batchnorm/beta",
-  "conv_2/batchnorm/gamma", "conv_2/batchnorm/moving_mean",
-  "conv_2/batchnorm/moving_variance", "conv_2/batchnorm", "conv_2/CheckNumerics",
-  "conv_2/control_dependency", "conv_2", "pool/CheckNumerics",
-  "pool/control_dependency", "pool", "conv_3/conv2d_params", "conv_3/Conv2D",
-  "conv_3/batchnorm/beta", "conv_3/batchnorm/gamma",
-  "conv_3/batchnorm/moving_mean", "conv_3/batchnorm/moving_variance", ...]
+   "ResizeBilinear/size", "ResizeBilinear", "Sub/y", "Sub", "Mul/y", "Mul",
+   "conv/conv2d_params", "conv/Conv2D", "conv/batchnorm/beta",
+   "conv/batchnorm/gamma", "conv/batchnorm/moving_mean",
+   "conv/batchnorm/moving_variance", "conv/batchnorm", "conv/CheckNumerics",
+   "conv/control_dependency", "conv", "conv_1/conv2d_params", "conv_1/Conv2D",
+   "conv_1/batchnorm/beta", "conv_1/batchnorm/gamma",
+   "conv_1/batchnorm/moving_mean", "conv_1/batchnorm/moving_variance",
+   "conv_1/batchnorm", "conv_1/CheckNumerics", "conv_1/control_dependency",
+   "conv_1", "conv_2/conv2d_params", "conv_2/Conv2D", "conv_2/batchnorm/beta",
+   "conv_2/batchnorm/gamma", "conv_2/batchnorm/moving_mean",
+   "conv_2/batchnorm/moving_variance", "conv_2/batchnorm", "conv_2/CheckNumerics",
+   "conv_2/control_dependency", "conv_2", "pool/CheckNumerics",
+   "pool/control_dependency", "pool", "conv_3/conv2d_params", "conv_3/Conv2D",
+   "conv_3/batchnorm/beta", "conv_3/batchnorm/gamma",
+   "conv_3/batchnorm/moving_mean", "conv_3/batchnorm/moving_variance", ...]
   
   ```
 
@@ -128,27 +128,27 @@ graph model.
   2018-07-23 15:31:35.949345: W tensorflow/core/framework/op_def_util.cc:346] Op BatchNormWithGlobalNormalization is deprecated. It will cease to work in GraphDef version 9. Use tf.nn.batch_normalization().
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.3018278404.759824385.5268>,
-  name: "classify_image_graph_def.pb"
+    def: #Reference<0.3018278404.759824385.5268>,
+    name: "classify_image_graph_def.pb"
   }}
 
   iex(2)> Tensorflex.get_graph_ops graph
   ["DecodeJpeg/contents", "DecodeJpeg", "Cast", "ExpandDims/dim", "ExpandDims",
-  "ResizeBilinear/size", "ResizeBilinear", "Sub/y", "Sub", "Mul/y", "Mul",
-  "conv/conv2d_params", "conv/Conv2D", "conv/batchnorm/beta",
-  "conv/batchnorm/gamma", "conv/batchnorm/moving_mean",
-  "conv/batchnorm/moving_variance", "conv/batchnorm", "conv/CheckNumerics",
-  "conv/control_dependency", "conv", "conv_1/conv2d_params", "conv_1/Conv2D",
-  "conv_1/batchnorm/beta", "conv_1/batchnorm/gamma",
-  "conv_1/batchnorm/moving_mean", "conv_1/batchnorm/moving_variance",
-  "conv_1/batchnorm", "conv_1/CheckNumerics", "conv_1/control_dependency",
-  "conv_1", "conv_2/conv2d_params", "conv_2/Conv2D", "conv_2/batchnorm/beta",
-  "conv_2/batchnorm/gamma", "conv_2/batchnorm/moving_mean",
-  "conv_2/batchnorm/moving_variance", "conv_2/batchnorm", "conv_2/CheckNumerics",
-  "conv_2/control_dependency", "conv_2", "pool/CheckNumerics",
-  "pool/control_dependency", "pool", "conv_3/conv2d_params", "conv_3/Conv2D",
-  "conv_3/batchnorm/beta", "conv_3/batchnorm/gamma",
-  "conv_3/batchnorm/moving_mean", "conv_3/batchnorm/moving_variance", ...]
+   "ResizeBilinear/size", "ResizeBilinear", "Sub/y", "Sub", "Mul/y", "Mul",
+   "conv/conv2d_params", "conv/Conv2D", "conv/batchnorm/beta",
+   "conv/batchnorm/gamma", "conv/batchnorm/moving_mean",
+   "conv/batchnorm/moving_variance", "conv/batchnorm", "conv/CheckNumerics",
+   "conv/control_dependency", "conv", "conv_1/conv2d_params", "conv_1/Conv2D",
+   "conv_1/batchnorm/beta", "conv_1/batchnorm/gamma",
+   "conv_1/batchnorm/moving_mean", "conv_1/batchnorm/moving_variance",
+   "conv_1/batchnorm", "conv_1/CheckNumerics", "conv_1/control_dependency",
+   "conv_1", "conv_2/conv2d_params", "conv_2/Conv2D", "conv_2/batchnorm/beta",
+   "conv_2/batchnorm/gamma", "conv_2/batchnorm/moving_mean",
+   "conv_2/batchnorm/moving_variance", "conv_2/batchnorm", "conv_2/CheckNumerics",
+   "conv_2/control_dependency", "conv_2", "pool/CheckNumerics",
+   "pool/control_dependency", "pool", "conv_3/conv2d_params", "conv_3/Conv2D",
+   "conv_3/batchnorm/beta", "conv_3/batchnorm/gamma",
+   "conv_3/batchnorm/moving_mean", "conv_3/batchnorm/moving_variance", ...]
   ```
 
   - _Iris Dataset MLP Model_
@@ -158,8 +158,8 @@ graph model.
   iex(1)> {:ok, graph} = Tensorflex.read_graph "graphdef_iris.pb"
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.4109712726.1847984130.24506>,
-  name: "graphdef_iris.pb"
+    def: #Reference<0.4109712726.1847984130.24506>,
+    name: "graphdef_iris.pb"
   }}
 
   iex(2)> Tensorflex.get_graph_ops graph
@@ -174,8 +174,8 @@ graph model.
   iex(1)> {:ok, graph} = Tensorflex.read_graph "graphdef_toy.pb"
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.1274892327.1580335105.235135>,
-  name: "graphdef_toy.pb"
+    def: #Reference<0.1274892327.1580335105.235135>,
+    name: "graphdef_toy.pb"
   }}
 
   iex(2)> Tensorflex.get_graph_ops graph
@@ -189,30 +189,30 @@ graph model.
   iex(1)> {:ok, graph} = Tensorflex.read_graph "frozen_model_lstm.pb"
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.713975820.1050542081.11558>,
-  name: "frozen_model_lstm.pb"
+    def: #Reference<0.713975820.1050542081.11558>,
+    name: "frozen_model_lstm.pb"
   }}
   
   iex(2)> Tensorflex.get_graph_ops graph
   ["Placeholder_1", "embedding_lookup/params_0", "embedding_lookup",
-  "transpose/perm", "transpose", "rnn/Shape", "rnn/strided_slice/stack",
-  "rnn/strided_slice/stack_1", "rnn/strided_slice/stack_2", "rnn/strided_slice",
-  "rnn/stack/1", "rnn/stack", "rnn/zeros/Const", "rnn/zeros", "rnn/stack_1/1",
-  "rnn/stack_1", "rnn/zeros_1/Const", "rnn/zeros_1", "rnn/Shape_1",
-  "rnn/strided_slice_2/stack", "rnn/strided_slice_2/stack_1",
-  "rnn/strided_slice_2/stack_2", "rnn/strided_slice_2", "rnn/time",
-  "rnn/TensorArray", "rnn/TensorArray_1", "rnn/TensorArrayUnstack/Shape",
-  "rnn/TensorArrayUnstack/strided_slice/stack",
-  "rnn/TensorArrayUnstack/strided_slice/stack_1",
-  "rnn/TensorArrayUnstack/strided_slice/stack_2",
-  "rnn/TensorArrayUnstack/strided_slice", "rnn/TensorArrayUnstack/range/start",
-  "rnn/TensorArrayUnstack/range/delta", "rnn/TensorArrayUnstack/range",
-  "rnn/TensorArrayUnstack/TensorArrayScatter/TensorArrayScatterV3",
-  "rnn/while/Enter", "rnn/while/Enter_1", "rnn/while/Enter_2",
-  "rnn/while/Enter_3", "rnn/while/Merge", "rnn/while/Merge_1",
-  "rnn/while/Merge_2", "rnn/while/Merge_3", "rnn/while/Less/Enter",
-  "rnn/while/Less", "rnn/while/LoopCond", "rnn/while/Switch",
-  "rnn/while/Switch_1", "rnn/while/Switch_2", "rnn/while/Switch_3", ...]
+   "transpose/perm", "transpose", "rnn/Shape", "rnn/strided_slice/stack",
+   "rnn/strided_slice/stack_1", "rnn/strided_slice/stack_2", "rnn/strided_slice",
+   "rnn/stack/1", "rnn/stack", "rnn/zeros/Const", "rnn/zeros", "rnn/stack_1/1",
+   "rnn/stack_1", "rnn/zeros_1/Const", "rnn/zeros_1", "rnn/Shape_1",
+   "rnn/strided_slice_2/stack", "rnn/strided_slice_2/stack_1",
+   "rnn/strided_slice_2/stack_2", "rnn/strided_slice_2", "rnn/time",
+   "rnn/TensorArray", "rnn/TensorArray_1", "rnn/TensorArrayUnstack/Shape",
+   "rnn/TensorArrayUnstack/strided_slice/stack",
+   "rnn/TensorArrayUnstack/strided_slice/stack_1",
+   "rnn/TensorArrayUnstack/strided_slice/stack_2",
+   "rnn/TensorArrayUnstack/strided_slice", "rnn/TensorArrayUnstack/range/start",
+   "rnn/TensorArrayUnstack/range/delta", "rnn/TensorArrayUnstack/range",
+   "rnn/TensorArrayUnstack/TensorArrayScatter/TensorArrayScatterV3",
+   "rnn/while/Enter", "rnn/while/Enter_1", "rnn/while/Enter_2",
+   "rnn/while/Enter_3", "rnn/while/Merge", "rnn/while/Merge_1",
+   "rnn/while/Merge_2", "rnn/while/Merge_3", "rnn/while/Less/Enter",
+   "rnn/while/Less", "rnn/while/LoopCond", "rnn/while/Switch",
+   "rnn/while/Switch_1", "rnn/while/Switch_2", "rnn/while/Switch_3", ...]
   ```
   """
 
@@ -234,10 +234,11 @@ matrix (`datalist`).
   _Creating a new matrix_
   
   ```elixir
-  iex(1)> mat = Tensorflex.create_matrix(2,3,[[2.2,1.3,44.5],[5.5,6.1,3.333]])    %Tensorflex.Matrix{
-  data: #Reference<0.759278808.823525378.128525>,
-  ncols: 3,
-  nrows: 2
+  iex(1)> mat = Tensorflex.create_matrix(2,3,[[2.2,1.3,44.5],[5.5,6.1,3.333]])    
+  %Tensorflex.Matrix{
+    data: #Reference<0.759278808.823525378.128525>,
+    ncols: 3,
+    nrows: 2
   }
   ```
 
@@ -248,25 +249,25 @@ inspection and manipulation functions-- `matrix_pos/3`,`size_of_matrix/1`,
   ```elixir
   iex(1)> mat = Tensorflex.create_matrix(4,4,[[123,431,23,1],[1,2,3,4],[5,6,7,8],[768,564,44,5]])
   %Tensorflex.Matrix{
-  data: #Reference<0.878138179.2435973124.131489>,
-  ncols: 4,
-  nrows: 4
+    data: #Reference<0.878138179.2435973124.131489>,
+    ncols: 4,
+    nrows: 4
   }
 
   iex(2)> mat = Tensorflex.append_to_matrix(mat, [[1,1,1,1]])
   %Tensorflex.Matrix{
-  data: #Reference<0.878138179.2435973124.131489>,
-  ncols: 4,
-  nrows: 5
+    data: #Reference<0.878138179.2435973124.131489>,
+    ncols: 4,
+    nrows: 5
   }
 
   iex(3)> Tensorflex.matrix_to_lists mat
   [
-  [123.0, 431.0, 23.0, 1.0],
-  [1.0, 2.0, 3.0, 4.0],
-  [5.0, 6.0, 7.0, 8.0],
-  [768.0, 564.0, 44.0, 5.0],
-  [1.0, 1.0, 1.0, 1.0]
+    [123.0, 431.0, 23.0, 1.0],
+    [1.0, 2.0, 3.0, 4.0],
+    [5.0, 6.0, 7.0, 8.0],
+    [768.0, 564.0, 44.0, 5.0],
+    [1.0, 1.0, 1.0, 1.0]
   ]
 
   iex(4)> Tensorflex.matrix_pos(mat,5,3)
@@ -327,9 +328,9 @@ Both `row` and `col` here are __NOT__ zero indexed.
   ```elixir
   iex(1)> mat = Tensorflex.create_matrix(2,3,[[2.2,1.3,44.5],[5.5,6.1,3.333]])
   %Tensorflex.Matrix{
-  data: #Reference<0.759278808.823525378.128525>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.759278808.823525378.128525>,
+    ncols: 3,
+    nrows: 2
   }
 
   iex(2)> Tensorflex.matrix_pos(mat,2,1)
@@ -358,9 +359,9 @@ the matrix and `ncols` represents the number of columns of the matrix.
   ```elixir
   iex(1)> mat = Tensorflex.create_matrix(2,3,[[2.2,1.3,44.5],[5.5,6.1,3.333]])
   %Tensorflex.Matrix{
-  data: #Reference<0.759278808.823525378.128525>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.759278808.823525378.128525>,
+    ncols: 3,
+    nrows: 2
   }
   
   iex(2)> Tensorflex.size_of_matrix mat
@@ -386,23 +387,23 @@ the same number of columns as the original matrix) as a list of lists
   ```elixir
   iex(1)> m = Tensorflex.create_matrix(2,3,[[23,23,23],[32,32,32]])
   %Tensorflex.Matrix{
-  data: #Reference<0.153563642.2042232833.193025>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.153563642.2042232833.193025>,
+    ncols: 3,
+    nrows: 2
   }
 
   iex(2)> m = Tensorflex.append_to_matrix(m,[[2,2,2]])
   %Tensorflex.Matrix{
-  data: #Reference<0.153563642.2042232833.193025>,
-  ncols: 3,
-  nrows: 3
+    data: #Reference<0.153563642.2042232833.193025>,
+    ncols: 3,
+    nrows: 3
   }
 
   iex(3)> m = Tensorflex.append_to_matrix(m,[[3,3,3]])
   %Tensorflex.Matrix{
-  data: #Reference<0.153563642.2042232833.193025>,
-  ncols: 3,
-  nrows: 4
+    data: #Reference<0.153563642.2042232833.193025>,
+    ncols: 3,
+    nrows: 4
   }
 
   iex(4)> m |> Tensorflex.matrix_to_lists
@@ -471,23 +472,23 @@ Tensorflex struct type that is used for holding tensor data and type.
   ```elixir
   iex(1)> vals = Tensorflex.create_matrix(2,3,[[12.0,45.2,2.11],[36.7,8.09,9.81]])
   %Tensorflex.Matrix{
-  data: #Reference<0.1251941183.3671982081.254268>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.1251941183.3671982081.254268>,
+    ncols: 3,
+    nrows: 2
   }
 
   iex(2)> dims = Tensorflex.create_matrix(1,2,[[2,3]])
   %Tensorflex.Matrix{
-  data: #Reference<0.1251941183.3671982081.254723>,
-  ncols: 2,
-  nrows: 1
+    data: #Reference<0.1251941183.3671982081.254723>,
+    ncols: 2,
+    nrows: 1
   }
 
   iex(3)> {:ok, tensor} = Tensorflex.float64_tensor vals,dims
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_double,
-  tensor: #Reference<0.1251941183.3671982081.255216>
+    datatype: :tf_double,
+    tensor: #Reference<0.1251941183.3671982081.255216>
   }}
 
   ```
@@ -513,8 +514,8 @@ Tensorflex struct type that is used for holding tensor data and type.
   iex(1)> {:ok, tensor} = Tensorflex.float64_tensor 123.123
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_double,
-  tensor: #Reference<0.2778616536.4219338753.155412>
+    datatype: :tf_double,
+    tensor: #Reference<0.2778616536.4219338753.155412>
   }}
   
   ```
@@ -551,23 +552,23 @@ Tensorflex struct type that is used for holding tensor data and type.
   ```elixir
   iex(1)> vals = Tensorflex.create_matrix(2,3,[[12.0,45.2,2.11],[36.7,8.09,9.81]])
   %Tensorflex.Matrix{
-  data: #Reference<0.1251941183.3671982081.254268>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.1251941183.3671982081.254268>,
+    ncols: 3,
+    nrows: 2
   }
   
   iex(2)> dims = Tensorflex.create_matrix(1,2,[[2,3]])
   %Tensorflex.Matrix{
-  data: #Reference<0.1251941183.3671982081.254723>,
-  ncols: 2,
-  nrows: 1
+    data: #Reference<0.1251941183.3671982081.254723>,
+    ncols: 2,
+    nrows: 1
   }
     
   iex(3)> {:ok, tensor} = Tensorflex.float32_tensor vals,dims
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_float,
-  tensor: #Reference<0.1251941183.3671982081.255228>
+    datatype: :tf_float,
+    tensor: #Reference<0.1251941183.3671982081.255228>
   }}
   
   ```
@@ -593,8 +594,8 @@ Tensorflex struct type that is used for holding tensor data and type.
   iex(1)> {:ok, tensor} = Tensorflex.float32_tensor 123.123
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_float,
-  tensor: #Reference<0.2011963375.1804468228.236110>
+    datatype: :tf_float,
+    tensor: #Reference<0.2011963375.1804468228.236110>
   }}
   
   ```
@@ -635,23 +636,23 @@ and all the float values will be typecast to integers.
   ```elixir
   iex(1)> vals = Tensorflex.create_matrix(2,3,[[123,45,333],[2,2,899]]) 
   %Tensorflex.Matrix{
-  data: #Reference<0.1256144000.2868510721.170449>,
-  ncols: 3,
-  nrows: 2
+    data: #Reference<0.1256144000.2868510721.170449>,
+    ncols: 3,
+    nrows: 2
   }
   
   iex(2)> dims = Tensorflex.create_matrix(1,2,[[2,3]])
   %Tensorflex.Matrix{
-  data: #Reference<0.1256144000.2868510721.170894>,
-  ncols: 2,
-  nrows: 1
+    data: #Reference<0.1256144000.2868510721.170894>,
+    ncols: 2,
+    nrows: 1
   }
 
   iex(3)> {:ok, tensor} = Tensorflex.int32_tensor vals,dims
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_int32,
-  tensor: #Reference<0.1256144000.2868510721.171357>
+    datatype: :tf_int32,
+    tensor: #Reference<0.1256144000.2868510721.171357>
   }}
   
   ```
@@ -677,8 +678,8 @@ Tensorflex struct type that is used for holding tensor data and type.
   iex(1)> {:ok, tensor} = Tensorflex.int32_tensor 123
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_int32,
-  tensor: #Reference<0.1927663658.3415343105.162588>
+    datatype: :tf_int32,
+    tensor: #Reference<0.1927663658.3415343105.162588>
   }}
   ```
   
@@ -714,8 +715,8 @@ Tensorflex struct type that is used for holding tensor data and type.
   iex(1)> {:ok, tensor} = Tensorflex.string_tensor "123.123"
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_string,
-  tensor: #Reference<0.2069282048.194904065.41126>
+    datatype: :tf_string,
+    tensor: #Reference<0.2069282048.194904065.41126>
   }}
   
   ```
@@ -760,8 +761,8 @@ will be an `integer` vector containing 250 values:
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.int32_tensor_alloc
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_int32,
-  tensor: #Reference<0.961157994.2087059457.18950>
+    datatype: :tf_int32,
+    tensor: #Reference<0.961157994.2087059457.18950>
   }}
   
   ```
@@ -796,8 +797,8 @@ output will be a `float` vector containing 250 values:
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.float32_tensor_alloc
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_float,
-  tensor: #Reference<0.961157994.2087059457.19014>
+    datatype: :tf_float,
+    tensor: #Reference<0.961157994.2087059457.19014>
   }}
   
   ```
@@ -832,8 +833,8 @@ output will be a `double` vector containing 250 values:
   iex(1)> {:ok, tensor} = Tensorflex.create_matrix(1,2,[[1,250]]) |> Tensorflex.float64_tensor_alloc
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_double,
-  tensor: #Reference<0.961157994.2087059457.19025>
+    datatype: :tf_double,
+    tensor: #Reference<0.961157994.2087059457.19025>
   }}
   
   ```
@@ -860,8 +861,8 @@ to view a list of all possible datatypes.
   iex(1)> {:ok, tensor} = Tensorflex.string_tensor "example"
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_string,
-  tensor: #Reference<0.4132928949.2894987267.194583>
+    datatype: :tf_string,
+    tensor: #Reference<0.4132928949.2894987267.194583>
   }}
   
   iex(2)> Tensorflex.tensor_datatype tensor
@@ -914,8 +915,8 @@ with the model to test out the model in Tensorflex.
   2018-07-25 14:20:29.079139: W tensorflow/core/framework/op_def_util.cc:346] Op BatchNormWithGlobalNormalization is deprecated. It will cease to work in GraphDef version 9. Use tf.nn.batch_normalization().
   {:ok,
   %Tensorflex.Graph{
-  def: #Reference<0.542869014.389152771.105680>,
-  name: "classify_image_graph_def.pb"
+    def: #Reference<0.542869014.389152771.105680>,
+    name: "classify_image_graph_def.pb"
   }}
   ``` 
   Then we load the image as a `uint8` tensor:
@@ -924,8 +925,8 @@ with the model to test out the model in Tensorflex.
   iex(2)> {:ok, input_tensor} = Tensorflex.load_image_as_tensor("cropped_panda.jpg")
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_uint8,
-  tensor: #Reference<0.1203951739.122552322.52747>
+    datatype: :tf_uint8,
+    tensor: #Reference<0.1203951739.122552322.52747>
   }}
   ```
   Then we create the output tensor which will hold out output vector values.
@@ -936,8 +937,8 @@ as there are 1008 classes in the model:
   iex(3)> {:ok, output_tensor} = Tensorflex.create_matrix(1,2,[[1008,1]]) |> Tensorflex.float32_tensor_alloc
   {:ok,
   %Tensorflex.Tensor{
-  datatype: :tf_float,
-  tensor: #Reference<0.1203951739.122552322.52794>
+    datatype: :tf_float,
+    tensor: #Reference<0.1203951739.122552322.52794>
   }}
   ```
   Next, we obtain the results by running the session:
@@ -946,23 +947,23 @@ as there are 1008 classes in the model:
   iex(4)> results = Tensorflex.run_session(graph, input_tensor, output_tensor, "DecodeJpeg", "softmax")
   2018-07-25 14:33:40.992813: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
   [
-  [1.059142014128156e-4, 2.8240500250831246e-4, 8.30648496048525e-5,
-  1.2982363114133477e-4, 7.32232874725014e-5, 8.014426566660404e-5,
-  6.63459359202534e-5, 0.003170756157487631, 7.931600703159347e-5,
-  3.707312498590909e-5, 3.0997329304227605e-5, 1.4232713147066534e-4,
-  1.0381334868725389e-4, 1.1057958181481808e-4, 1.4321311027742922e-4,
-  1.203602587338537e-4, 1.3130248407833278e-4, 5.850398520124145e-5,
-  2.641105093061924e-4, 3.1629020668333396e-5, 3.906813799403608e-5,
-  2.8646905775531195e-5, 2.2863158665131778e-4, 1.2222197256051004e-4,
-  5.956588938715868e-5, 5.421260357252322e-5, 5.996063555357978e-5,
-  4.867801326327026e-4, 1.1005574924638495e-4, 2.3433618480339646e-4,
-  1.3062104699201882e-4, 1.317620772169903e-4, 9.388553007738665e-5,
-  7.076268957462162e-5, 4.281177825760096e-5, 1.6863139171618968e-4,
-  9.093972039408982e-5, 2.611844101920724e-4, 2.7584232157096267e-4,
-  5.157176201464608e-5, 2.144951868103817e-4, 1.3628098531626165e-4,
-  8.007588621694595e-5, 1.7929042223840952e-4, 2.2831936075817794e-4,
-  6.216531619429588e-5, 3.736453436431475e-5, 6.782123091397807e-5,
-  1.1538144462974742e-4, ...]
+    [1.059142014128156e-4, 2.8240500250831246e-4, 8.30648496048525e-5,
+    1.2982363114133477e-4, 7.32232874725014e-5, 8.014426566660404e-5,
+    6.63459359202534e-5, 0.003170756157487631, 7.931600703159347e-5,
+    3.707312498590909e-5, 3.0997329304227605e-5, 1.4232713147066534e-4,
+    1.0381334868725389e-4, 1.1057958181481808e-4, 1.4321311027742922e-4,
+    1.203602587338537e-4, 1.3130248407833278e-4, 5.850398520124145e-5,
+    2.641105093061924e-4, 3.1629020668333396e-5, 3.906813799403608e-5,
+    2.8646905775531195e-5, 2.2863158665131778e-4, 1.2222197256051004e-4,
+    5.956588938715868e-5, 5.421260357252322e-5, 5.996063555357978e-5,
+    4.867801326327026e-4, 1.1005574924638495e-4, 2.3433618480339646e-4,
+    1.3062104699201882e-4, 1.317620772169903e-4, 9.388553007738665e-5,
+    7.076268957462162e-5, 4.281177825760096e-5, 1.6863139171618968e-4,
+    9.093972039408982e-5, 2.611844101920724e-4, 2.7584232157096267e-4,
+    5.157176201464608e-5, 2.144951868103817e-4, 1.3628098531626165e-4,
+    8.007588621694595e-5, 1.7929042223840952e-4, 2.2831936075817794e-4,
+    6.216531619429588e-5, 3.736453436431475e-5, 6.782123091397807e-5,
+    1.1538144462974742e-4, ...]
   ]
   
   ```
@@ -1038,9 +1039,9 @@ examples below:
   ```elixir
   iex(1)> mat = Tensorflex.load_csv_as_matrix("test.csv")
   %Tensorflex.Matrix{
-  data: #Reference<0.4024686574.590479361.258459>,
-  ncols: 784,
-  nrows: 28000
+    data: #Reference<0.4024686574.590479361.258459>,
+    ncols: 784,
+    nrows: 28000
   }
   
   iex(2)> Tensorflex.matrix_pos mat, 5,97
@@ -1056,9 +1057,9 @@ same file but without header, `test_without_header.csv`:
 ```elixir
   iex(1)> no_header = Tensorflex.load_csv_as_matrix("test/test_without_header.csv", header: :false)    
   %Tensorflex.Matrix{
-  data: #Reference<0.4024686574.590479364.257078>,
-  ncols: 784,
-  nrows: 28000
+    data: #Reference<0.4024686574.590479364.257078>,
+    ncols: 784,
+    nrows: 28000
   }
   
   iex(2)> Tensorflex.matrix_pos no_header,5,97
@@ -1092,23 +1093,23 @@ same file but without header, `test_without_header.csv`:
   ```elixir
   iex(1)> m1 = Tensorflex.load_csv_as_matrix("sample1.csv", header: :false) 
   %Tensorflex.Matrix{
-  data: #Reference<0.3878093040.3013214209.247502>,
-  ncols: 5,
-  nrows: 3
+    data: #Reference<0.3878093040.3013214209.247502>,
+    ncols: 5,
+    nrows: 3
   }
   
   iex(2)> Tensorflex.matrix_to_lists m1
   [
-  [1.0, 2.0, 3.0, 4.0, 5.0],
-  [6.0, 7.0, 8.0, 9.0, 10.0],
-  [11.0, 12.0, 13.0, 14.0, 15.0]
+    [1.0, 2.0, 3.0, 4.0, 5.0],
+    [6.0, 7.0, 8.0, 9.0, 10.0],
+    [11.0, 12.0, 13.0, 14.0, 15.0]
   ]
 
   iex(3)> m2 = Tensorflex.load_csv_as_matrix("sample2.csv", header: :true, delimiter: "-")
   %Tensorflex.Matrix{
-  data: #Reference<0.4024686574.590479361.258952>,
-  ncols: 4,
-  nrows: 3
+    data: #Reference<0.4024686574.590479361.258952>,
+    ncols: 4,
+    nrows: 3
   }
 
   iex(4)> Tensorflex.matrix_to_lists m2
@@ -1169,7 +1170,7 @@ image. The output tensor is created using the tensor allocation functions
   Returns a List of Lists (similar to the `matrix_to_lists/1` function)
 containing the generated predictions as per the output tensor dimensions.
 
-  ## Examples
+## Examples
   
   - A blog post [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/) covers
     generating predictions and running sessions using an MLP model on the Iris
