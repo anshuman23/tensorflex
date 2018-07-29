@@ -235,9 +235,10 @@ To do sentiment analysis in Tensorflex however, we first need to do some preproc
 Now, for the Python two scripts: `freeze.py` and `create_input_data.py`:
 - `freeze.py`: This is used to create our `pb` model from the Python saved checkpoints. Here we will use the downloaded Python checkpoints' model to create the `.pb` graph. Just running `python freeze.py` after putting the model files in the correct directory will do the trick. In the same `./model/` folder, you will now see a file called `frozen_model_lstm.pb`. This is the file which we will load into Tensorflex. In case for some reason you want to skip this step and just get the loaded graph here is a Dropbox [link](https://www.dropbox.com/s/xp1bphy0k40v5r6/frozen_model_lstm.pb?dl=0)
 - `create_input_data.py`: Even if we can load our model into Tensorflex, we also need some data to do inference on. For that, we will write our own example sentences and convert them (read encode) to a numeral (`int32`) format that can be used by the network as input. For that, you can inspect the code in the script to get an understanding of what is happening. Basically, the neural network takes in an input of a `24x250` `int32` (matrix) tensor created from text which has been encoded as `UTF-8`. Again, running `python create_input_data.py` will give you two `csv` files (one indicating positive sentiment and the other a negative sentiment) which we will later load into Tensorflex. The two sentences converted are:
-       - Negative sentiment sentence: _That movie was terrible._
-       - Positive sentiment sentence: _That movie was the best one I have ever seen._
+  - Negative sentiment sentence: _That movie was terrible._
+  - Positive sentiment sentence: _That movie was the best one I have ever seen._
 
+              
 Both of these get converted to two files `inputMatrixPositive.csv` and `inputMatrixNegative.csv` (by `create_input_data.py`) which we load into Tensorflex next.
 
 __Inference in Tensorflex:__
