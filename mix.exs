@@ -9,10 +9,26 @@ defmodule Tensorflex.MixProject do
       elixir: "~> 1.6",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env() == :prod,
+      description: description(),
+      package: package(),
       deps: deps()
     ]
   end
 
+  defp description do
+    """
+    A simple and fast library for running Tensorflow graph models in Elixir. Tensorflex is written around the Tensorflow C API, and allows Elixir developers to leverage Machine Learning and Deep Learning solutions in their projects.
+    """
+  end
+  
+  defp package do
+    [
+      maintainers: ["Anshuman Chhabra"],
+      licenses: ["Apache 2.0"],
+      links: %{"GitHub" => "https://github.com/anshuman23/tensorflex"}
+    ]
+  end
+  
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
