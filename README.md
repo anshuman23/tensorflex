@@ -11,14 +11,13 @@
 ### How to run
 - You need to have the Tensorflow C API installed. Look [here](https://www.tensorflow.org/install/install_c) for details.
 - You also need the C library `libjpeg`. If you are using Linux or OSX, it should already be present on your machine, otherwise be sure to install (`brew install libjpeg` for OSX, and `sudo apt-get install libjpeg-dev` for Ubuntu). 
-- Clone this repository and `cd` into it
-- Run `mix deps.get` to install the dependencies
-- Run `mix compile` to compile the code
-- Open up `iex` using `iex -S mix`
-
+- Simply add Tensorflex to your list of dependencies in `mix.exs` and you are good to go!: 
+```elixir
+{:tensorflex, "~> 0.1.0"}
+```
 
 ### Documentation
-Tensorflex contains three main structs which handle different datatypes. These are `%Graph`, `%Matrix` and `%Tensor`. `%Graph` type structs handle pre-trained graph models, `%Matrix` handles Tensorflex 2-D matrices, and `%Tensor` handles Tensorflow Tensor types. The official Tensorflow documentation is coming [soon](https://github.com/anshuman23/tensorflex) and do note that this README only briefly discusses Tensorflow functionalities.
+Tensorflex contains three main structs which handle different datatypes. These are `%Graph`, `%Matrix` and `%Tensor`. `%Graph` type structs handle pre-trained graph models, `%Matrix` handles Tensorflex 2-D matrices, and `%Tensor` handles Tensorflow Tensor types. The official Tensorflow documentation is present [here](https://hexdocs.pm/tensorflex/Tensorflex.html) and do note that this README only briefly discusses Tensorflex functionalities.
 
 - `read_graph/1`:
   - Used for loading a Tensorflow `.pb` graph model in Tensorflex.
