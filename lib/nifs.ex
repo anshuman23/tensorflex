@@ -4,7 +4,7 @@ defmodule Tensorflex.NIFs do
   @on_load :load_nifs
 
   def load_nifs do
-    :erlang.load_nif("priv/Tensorflex", 0)
+    :erlang.load_nif(Application.app_dir(:tensorflex, "priv/Tensorflex"), 0)
   end
 
   def create_matrix(_nrows,_ncolumns, _list) do
