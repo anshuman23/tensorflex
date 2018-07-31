@@ -898,7 +898,7 @@ defmodule Tensorflex do
   arguments. Support for grayscale images and other image formats such as `PNG`
   will be added in the future. 
 
-## Examples
+  ## Examples
 
   To exemplify the working of the `load_image_as_tensor/1` function we will
   cover the entire prediction pipeline for the Inception model. However, this
@@ -992,7 +992,7 @@ defmodule Tensorflex do
   panda, panda, panda bear, coon bear, Ailuropoda melanoleuca` (Line 3691 in the
   file). Thus, we have correctly identified the animal in the image as a panda
   using Tensorflex.  
-"""
+  """
 
   def load_image_as_tensor(imagepath) do
     unless File.exists?(imagepath) do
@@ -1182,7 +1182,7 @@ defmodule Tensorflex do
 
   * Working with an RNN-LSTM example for sentiment analysis is covered
      [here](https://github.com/anshuman23/tensorflex/pull/25).  
-"""
+  """
 
   def run_session(%Graph{def: graphdef, name: _filepath}, %Tensor{datatype: _input_datatype, tensor: input_ref}, %Tensor{datatype: _output_datatype, tensor: output_ref}, input_opname, output_opname) do
     NIFs.run_session(graphdef, input_ref, output_ref, input_opname, output_opname)
