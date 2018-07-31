@@ -13,7 +13,7 @@
 - You also need the C library `libjpeg`. If you are using Linux or OSX, it should already be present on your machine, otherwise be sure to install (`brew install libjpeg` for OSX, and `sudo apt-get install libjpeg-dev` for Ubuntu). 
 - Simply add Tensorflex to your list of dependencies in `mix.exs` and you are good to go!: 
 ```elixir
-{:tensorflex, "~> 0.1.0"}
+{:tensorflex, github: "anshuman23/tensorflex"}
 ```
 
 ### Documentation
