@@ -24,6 +24,7 @@ defmodule Tensorflex.MixProject do
   defp package do
     [
       maintainers: ["Anshuman Chhabra"],
+      files: ["lib", "priv", "mix.exs", "Makefile", "c_src", "README.md", "LICENSE"],
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/anshuman23/tensorflex"}
     ]
