@@ -1,10 +1,10 @@
 defmodule Tensorflex do
   @moduledoc """
   A simple and fast library for running Tensorflow graph models in Elixir.
-Tensorflex is written around the [Tensorflow C
-API](https://www.tensorflow.org/install/install_c), and allows Elixir
-developers to leverage Machine Learning and Deep Learning solutions in their
-projects.
+  Tensorflex is written around the [Tensorflow C
+  API](https://www.tensorflow.org/install/install_c), and allows Elixir
+  developers to leverage Machine Learning and Deep Learning solutions in their
+  projects.
 
   __NOTE__:
 
@@ -24,7 +24,7 @@ projects.
     different tensor datatypes than the ones required by the graph can all lead to
     failure. While these are not easy errors to make, do ensure that you test your
     solution well before deployment.  
-"""
+  """
   
   alias Tensorflex.{NIFs, Graph, Tensor, Matrix}
 
@@ -41,7 +41,7 @@ projects.
   Returns a tuple `{:ok, %Graph}`. 
   
   `%Graph` is an internal Tensorflex struct which holds the name of the graph
-file and the binary definition data that is read in via the `.pb` file. 
+  file and the binary definition data that is read in via the `.pb` file. 
 
   ## Examples:
   
@@ -217,7 +217,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def get_graph_ops(%Graph{def: ref, name: filepath}) do
+  def get_graph_ops(%Graph{def: ref, name: _filepath}) do
     NIFs.get_graph_ops(ref)
   end
 
@@ -343,7 +343,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def matrix_pos(%Matrix{nrows: nrows, ncols: ncols, data: ref}, row, col) when row > 0 and col > 0 do
+  def matrix_pos(%Matrix{nrows: _nrows, ncols: _ncols, data: ref}, row, col) when row > 0 and col > 0 do
     NIFs.matrix_pos(ref, row, col)
   end
 
@@ -370,7 +370,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def size_of_matrix(%Matrix{nrows: nrows, ncols: ncols, data: ref}) do
+  def size_of_matrix(%Matrix{nrows: nrows, ncols: ncols, data: _ref}) do
     {nrows, ncols}
   end
 
@@ -453,7 +453,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def matrix_to_lists(%Matrix{nrows: nrows, ncols: ncols, data: ref}) do
+  def matrix_to_lists(%Matrix{nrows: _nrows, ncols: _ncols, data: ref}) do
     NIFs.matrix_to_lists(ref)
   end
 
@@ -495,7 +495,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def float64_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def float64_tensor(%Matrix{nrows: _val_rows, ncols: _val_cols, data: val_ref}, %Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.float64_tensor(val_ref, dim_ref)
     {:ok, %Tensor{datatype: :tf_double, tensor: ref}} 
   end
@@ -575,7 +575,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def float32_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def float32_tensor(%Matrix{nrows: _val_rows, ncols: _val_cols, data: val_ref}, %Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.float32_tensor(val_ref, dim_ref)
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
   end
@@ -659,7 +659,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def int32_tensor(%Matrix{nrows: val_rows, ncols: val_cols, data: val_ref}, %Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def int32_tensor(%Matrix{nrows: _val_rows, ncols: _val_cols, data: val_ref}, %Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.int32_tensor(val_ref, dim_ref)
     {:ok, %Tensor{datatype: :tf_int32, tensor: ref}} 
   end
@@ -769,7 +769,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def int32_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def int32_tensor_alloc(%Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.int32_tensor_alloc(dim_ref)
     {:ok, %Tensor{datatype: :tf_int32, tensor: ref}} 
   end
@@ -805,7 +805,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
   
-  def float32_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def float32_tensor_alloc(%Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.float32_tensor_alloc(dim_ref)
     {:ok, %Tensor{datatype: :tf_float, tensor: ref}} 
   end
@@ -841,7 +841,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def float64_tensor_alloc(%Matrix{nrows: dim_rows, ncols: dim_cols, data: dim_ref}) do
+  def float64_tensor_alloc(%Matrix{nrows: _dim_rows, ncols: _dim_cols, data: dim_ref}) do
     {:ok, ref} = NIFs.float64_tensor_alloc(dim_ref)
     {:ok, %Tensor{datatype: :tf_double, tensor: ref}} 
   end
@@ -871,7 +871,7 @@ file and the binary definition data that is read in via the `.pb` file.
   ```
   """
 
-  def tensor_datatype(%Tensor{datatype: datatype, tensor: ref}) do
+  def tensor_datatype(%Tensor{datatype: datatype, tensor: _ref}) do
     {:ok, datatype}
   end
 
@@ -1184,7 +1184,7 @@ file and the binary definition data that is read in via the `.pb` file.
      [here](https://github.com/anshuman23/tensorflex/pull/25).  
 """
 
-  def run_session(%Graph{def: graphdef, name: filepath}, %Tensor{datatype: input_datatype, tensor: input_ref}, %Tensor{datatype: output_datatype, tensor: output_ref}, input_opname, output_opname) do
+  def run_session(%Graph{def: graphdef, name: _filepath}, %Tensor{datatype: _input_datatype, tensor: input_ref}, %Tensor{datatype: _output_datatype, tensor: output_ref}, input_opname, output_opname) do
     NIFs.run_session(graphdef, input_ref, output_ref, input_opname, output_opname)
   end
   

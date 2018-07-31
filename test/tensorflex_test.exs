@@ -138,8 +138,8 @@ defmodule TensorflexTest do
 
   describe "graph loading and reading functionalities" do
     test "graph loading check" do
-      {:ok, graph_toy} = Tensorflex.read_graph "./test/graphdef_toy.pb"
-      {:ok, graph_iris} = Tensorflex.read_graph "./test/graphdef_iris.pb"
+      {:ok, _graph_toy} = Tensorflex.read_graph "./test/graphdef_toy.pb"
+      {:ok, _graph_iris} = Tensorflex.read_graph "./test/graphdef_iris.pb"
     end
 
     test "get all graph ops" do
@@ -151,11 +151,11 @@ defmodule TensorflexTest do
 
     test "incorrect usage check" do
       assert_raise ArgumentError, fn ->
-	{:ok, graph} = Tensorflex.read_graph "Makefile"
+	{:ok, _graph} = Tensorflex.read_graph "Makefile"
       end
       
       assert_raise ArgumentError, fn ->
-	{:ok, graph} = Tensorflex.read_graph "Makefile.pb"
+	{:ok, _graph} = Tensorflex.read_graph "Makefile.pb"
       end
     end
   end
@@ -185,7 +185,7 @@ defmodule TensorflexTest do
 
     test "CSV-to-matrix function incorrect usage check" do
       assert_raise ArgumentError, fn ->
-	m = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :no_header, delimiter: ",")
+	_m = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :no_header, delimiter: ",")
       end
     end
   end
