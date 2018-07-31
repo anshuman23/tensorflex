@@ -419,3 +419,6 @@ Thus we can clearly see that in this case the RNN indicates negative sentiment! 
     - [PR #23: Added fast C based direct CSV-to-matrix functionality with options](https://github.com/anshuman23/tensorflex/pull/23)
     - [PR #24: Added TF_INT32 tensors and tensor allocators](https://github.com/anshuman23/tensorflex/pull/24)
     - [PR #25: Added RNN (LSTM) example](https://github.com/anshuman23/tensorflex/pull/25)
+    - [PR #26: Added documentation](https://github.com/anshuman23/tensorflex/pull/26)
+    - [PR #28: Added improved tests](https://github.com/anshuman23/tensorflex/pull/28)
+    - [PR #29: Adding metadata to mix.exs](https://github.com/anshuman23/tensorflex/pull/29)
