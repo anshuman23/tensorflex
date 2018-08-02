@@ -852,6 +852,167 @@ static ERL_NIF_TERM load_csv_as_matrix(ErlNifEnv *env, int argc, const ERL_NIF_T
   return mat_ret;
 }
 
+static ERL_NIF_TERM add_scalar_to_matrix(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+    ERL_NIF_TERM ret;
+    unsigned i, j;
+    mx_t mx, mx_ret;
+    mx.p = NULL;
+    mx_ret.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+    	return enif_make_badarg(env);
+    }
+
+    double scalar = 0.0;
+    if (!enif_get_double(env, argv[1], &scalar)) {
+      return enif_make_badarg(env); 
+    }
+
+   mx_ret.p = alloc_matrix(env, mx.p->nrows, mx.p->ncols);
+    for (i = 0; i < mx.p->nrows; i++) {
+	for (j = 0; j < mx.p->ncols; j++) {
+	    POS(mx_ret.p, i, j) = POS(mx.p, i, j) + scalar;
+	}
+    }
+
+   ret = enif_make_resource(env, mx_ret.p);
+   enif_release_resource(mx_ret.p);
+   return ret;
+}
+
+static ERL_NIF_TERM subtract_scalar_from_matrix(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+    ERL_NIF_TERM ret;
+    unsigned i, j;
+    mx_t mx, mx_ret;
+    mx.p = NULL;
+    mx_ret.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+    	return enif_make_badarg(env);
+    }
+
+   double scalar = 0.0;
+    if (!enif_get_double(env, argv[1], &scalar)) {
+      return enif_make_badarg(env); 
+    }
+
+   mx_ret.p = alloc_matrix(env, mx.p->nrows, mx.p->ncols);
+    for (i = 0; i < mx.p->nrows; i++) {
+	for (j = 0; j < mx.p->ncols; j++) {
+	    POS(mx_ret.p, i, j) = POS(mx.p, i, j) - scalar;
+	}
+    }
+
+   ret = enif_make_resource(env, mx_ret.p);
+   enif_release_resource(mx_ret.p);
+   return ret;
+}
+
+static ERL_NIF_TERM multiply_matrix_with_scalar(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+    ERL_NIF_TERM ret;
+    unsigned i, j;
+    mx_t mx, mx_ret;
+    mx.p = NULL;
+    mx_ret.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+    	return enif_make_badarg(env);
+    }
+
+   double scalar = 1.0;
+   if (!enif_get_double(env, argv[1], &scalar)) {
+      return enif_make_badarg(env); 
+    }
+
+   mx_ret.p = alloc_matrix(env, mx.p->nrows, mx.p->ncols);
+   for (i = 0; i < mx.p->nrows; i++) {
+	for (j = 0; j < mx.p->ncols; j++) {
+	    POS(mx_ret.p, i, j) = POS(mx.p, i, j) * scalar;
+	}
+    }
+
+   ret = enif_make_resource(env, mx_ret.p);
+   enif_release_resource(mx_ret.p);
+   return ret;
+}
+
+static ERL_NIF_TERM divide_matrix_by_scalar(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+    ERL_NIF_TERM ret;
+    unsigned i, j;
+    mx_t mx, mx_ret;
+    mx.p = NULL;
+    mx_ret.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) {
+    	return enif_make_badarg(env);
+    }
+
+   double scalar = 1.0;;
+   if ((!enif_get_double(env, argv[1], &scalar)) || (scalar == 0.0)) {
+      return enif_make_badarg(env); 
+    }
+
+   mx_ret.p = alloc_matrix(env, mx.p->nrows, mx.p->ncols);
+    for (i = 0; i < mx.p->nrows; i++) {
+	for (j = 0; j < mx.p->ncols; j++) {
+	    POS(mx_ret.p, i, j) = POS(mx.p, i, j) / scalar;
+	}
+    }
+
+   ret = enif_make_resource(env, mx_ret.p);
+   enif_release_resource(mx_ret.p);
+   return ret;
+}
+
+static ERL_NIF_TERM add_matrices(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    unsigned i, j;
+    ERL_NIF_TERM ret;
+    mx_t mx1, mx2, mx;
+    mx1.p = NULL;
+    mx2.p = NULL;
+    mx.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx1.vp) || !enif_get_resource(env, argv[1], resource_type, &mx2.vp) ||	mx1.p->nrows != mx2.p->nrows || mx1.p->ncols != mx2.p->ncols) {
+    	return enif_make_badarg(env);
+    }
+    mx.p = alloc_matrix(env, mx1.p->nrows, mx2.p->ncols);
+    for (i = 0; i < mx1.p->nrows; i++) {
+	for (j = 0; j < mx2.p->ncols; j++) {
+	    POS(mx.p, i, j) = POS(mx1.p, i, j) + POS(mx2.p, i, j);
+	}
+    }
+    ret = enif_make_resource(env, mx.p);
+    enif_release_resource(mx.p);
+    return ret;
+}
+
+static ERL_NIF_TERM subtract_matrices(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    unsigned i, j;
+    ERL_NIF_TERM ret;
+    mx_t mx1, mx2, mx;
+    mx1.p = NULL;
+    mx2.p = NULL;
+    mx.p = NULL;
+
+    if (!enif_get_resource(env, argv[0], resource_type, &mx1.vp) || !enif_get_resource(env, argv[1], resource_type, &mx2.vp) ||	mx1.p->nrows != mx2.p->nrows || mx1.p->ncols != mx2.p->ncols) {
+    	return enif_make_badarg(env);
+    }
+    mx.p = alloc_matrix(env, mx1.p->nrows, mx2.p->ncols);
+    for (i = 0; i < mx1.p->nrows; i++) {
+	for (j = 0; j < mx2.p->ncols; j++) {
+	    POS(mx.p, i, j) = POS(mx1.p, i, j) - POS(mx2.p, i, j);
+	}
+    }
+    ret = enif_make_resource(env, mx.p);
+    enif_release_resource(mx.p);
+    return ret;
+}
 
 static ErlNifFunc nif_funcs[] =
   {
@@ -877,6 +1038,12 @@ static ErlNifFunc nif_funcs[] =
     { "run_session", 5, run_session },
     { "load_image_as_tensor", 1, load_image_as_tensor },
     { "load_csv_as_matrix", 3, load_csv_as_matrix },
+    { "add_scalar_to_matrix", 2, add_scalar_to_matrix },
+    { "subtract_scalar_from_matrix", 2, subtract_scalar_from_matrix },
+    { "multiply_matrix_with_scalar", 2, multiply_matrix_with_scalar },
+    { "divide_matrix_by_scalar", 2, divide_matrix_by_scalar },
+    { "add_matrices", 2, add_matrices },
+    { "subtract_matrices", 2, subtract_matrices },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex.NIFs, nif_funcs, res_loader, NULL, NULL, NULL)
