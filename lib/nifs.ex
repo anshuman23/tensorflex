@@ -95,4 +95,28 @@ defmodule Tensorflex.NIFs do
     raise "NIF run_session/5 not implemented"
   end
 
+  def add_scalar_to_matrix(_mat, _scalar) do
+    raise "NIF add_scalar_to_matrix/2 not implemented"
+  end
+
+  def subtract_scalar_from_matrix(_mat, _scalar) do
+    raise "NIF subtract_scalar_from_matrix/2 not implemented"
+  end
+
+  def multiply_matrix_with_scalar(_mat, _scalar) do
+    raise "NIF multiply_matrix_with_scalar/2 not implemented"
+  end
+
+  def divide_matrix_by_scalar(_mat, _scalar) do
+    raise "NIF divide_matrix_by_scalar/2 not implemented"
+  end
+
+  def add_matrices(_mat1, _mat2) do
+    raise "NIF add_matrices/2 not implemented"
+  end
+
+  def subtract_matrices(_mat1, _mat2) do
+    raise "NIF subtract_matrices/2 not implemented"
+  end
+
 end

@@ -1187,5 +1187,225 @@ defmodule Tensorflex do
   def run_session(%Graph{def: graphdef, name: _filepath}, %Tensor{datatype: _input_datatype, tensor: input_ref}, %Tensor{datatype: _output_datatype, tensor: output_ref}, input_opname, output_opname) do
     NIFs.run_session(graphdef, input_ref, output_ref, input_opname, output_opname)
   end
+
+  @doc """
+  Adds scalar value to matrix.
+
+  Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  Returns a `%Matrix` modified matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.2262135929.2234908676.182623>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(2)> m = Tensorflex.add_scalar_to_matrix(m, 5) 
+  %Tensorflex.Matrix{
+    data: #Reference<0.2262135929.2234908673.182139>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(3)> Tensorflex.matrix_to_lists m
+  [[6.0, 7.0, 8.0], [9.0, 10.0, 11.0]]
+  ```
+  """
+
+  def add_scalar_to_matrix(%Matrix{nrows: nrows, ncols: ncols, data: ref}, scalar) do
+    new_ref = NIFs.add_scalar_to_matrix(ref, scalar/1)
+    %Matrix{nrows: nrows, ncols: ncols, data: new_ref}
+  end
+
+  @doc """
+  Subtracts scalar value from matrix.
+
+  Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  Returns a `%Matrix` modified matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.2262135929.2234908676.182623>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(2)> m = Tensorflex.subtract_scalar_from_matrix m,5                     
+  %Tensorflex.Matrix{
+    data: #Reference<0.11868180.3310747649.147467>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(3)> Tensorflex.matrix_to_lists m
+  [[-4.0, -3.0, -2.0], [-1.0, 0.0, 1.0]]
+  ```
+  """
+
+  def subtract_scalar_from_matrix(%Matrix{nrows: nrows, ncols: ncols, data: ref}, scalar) do
+    new_ref = NIFs.subtract_scalar_from_matrix(ref, scalar/1)
+    %Matrix{nrows: nrows, ncols: ncols, data: new_ref}
+  end
+
+  @doc """
+  Multiplies scalar value with matrix.
+
+  Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  Returns a `%Matrix` modified matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.2262135929.2234908676.182623>,
+    ncols: 3,
+    nrows: 2
+  }
+  
+  iex(2)> m = Tensorflex.multiply_matrix_with_scalar m,5
+  %Tensorflex.Matrix{
+    data: #Reference<0.2093133110.1968832513.7094>,
+    ncols: 3,
+    nrows: 2
+  }
+  
+  iex(3)> Tensorflex.matrix_to_lists m
+  [[5.0, 10.0, 15.0], [20.0, 25.0, 30.0]]
+  ```
+  """
+
+  def multiply_matrix_with_scalar(%Matrix{nrows: nrows, ncols: ncols, data: ref}, scalar) do
+    new_ref = NIFs.multiply_matrix_with_scalar(ref, scalar/1)
+    %Matrix{nrows: nrows, ncols: ncols, data: new_ref}
+  end
+
+  @doc """
+  Divides matrix values by scalar.
+
+  Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  Returns a `%Matrix` modified matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.2262135929.2234908676.182623>,
+    ncols: 3,
+    nrows: 2
+  }
+  
+  iex(2)> m = Tensorflex.divide_matrix_by_scalar m,5
+  %Tensorflex.Matrix{
+    data: #Reference<0.3723154058.2507014148.17262>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(3)> Tensorflex.matrix_to_lists m
+  [[0.2, 0.4, 0.6], [0.8, 1.0, 1.2]]
+
+  ```
+  """
+
+  def divide_matrix_by_scalar(%Matrix{nrows: nrows, ncols: ncols, data: ref}, scalar) do
+    new_ref = NIFs.divide_matrix_by_scalar(ref, scalar/1)
+    %Matrix{nrows: nrows, ncols: ncols, data: new_ref}
+  end  
+
+  @doc """
+  Adds two matrices of same dimensions together.
+
+  Takes in two `%Matrix` matrices as arguments.
+
+  Returns the resultant `%Matrix` matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m1 = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244353.117555>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(2)> m2 = Tensorflex.create_matrix(2,3,[[4,5,6],[1,2,3]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244354.115855>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(3)> m_added = Tensorflex.add_matrices m1,m2
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244353.118873>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(4)> Tensorflex.matrix_to_lists m_added
+  [[5.0, 7.0, 9.0], [5.0, 7.0, 9.0]]
+
+  ```
+  """
+  def add_matrices(%Matrix{nrows: nrows1, ncols: _ncols1, data: ref1}, %Matrix{nrows: _nrows2, ncols: ncols2, data: ref2}) do
+    new_ref = NIFs.add_matrices(ref1, ref2)
+    %Matrix{nrows: nrows1, ncols: ncols2, data: new_ref}
+  end
+
+  @doc """
+  Subtracts `matrix2` from `matrix1`.
+
+  Takes in two `%Matrix` matrices as arguments.
+
+  Returns the resultant `%Matrix` matrix.
+
+  ## Examples
+
+  ```elixir
+  iex(1)> m1 = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244353.117555>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(2)> m2 = Tensorflex.create_matrix(2,3,[[4,5,6],[1,2,3]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244354.115855>,
+    ncols: 3,
+    nrows: 2
+  }
+
+  iex(3)> m_subtracted = Tensorflex.subtract_matrices m1,m2
+  %Tensorflex.Matrix{
+    data: #Reference<0.3124708718.3046244353.120058>,
+    ncols: 3,
+    nrows: 2
+  }
+  
+  iex(4)> Tensorflex.matrix_to_lists m_subtracted
+  [[-3.0, -3.0, -3.0], [3.0, 3.0, 3.0]]
+
+  ```
+  """
+    
+  def subtract_matrices(%Matrix{nrows: nrows1, ncols: _ncols1, data: ref1}, %Matrix{nrows: _nrows2, ncols: ncols2, data: ref2}) do
+    new_ref = NIFs.subtract_matrices(ref1, ref2)
+    %Matrix{nrows: nrows1, ncols: ncols2, data: new_ref}
+  end
   
 end
