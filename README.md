@@ -139,7 +139,61 @@ Tensorflex contains three main structs which handle different datatypes. These a
   - Takes in five arguments: a pre-trained Tensorflow graph `.pb` model read in from the `read_graph/1` function (`graph`), an input tensor with the dimensions and data required for the input operation of the graph to run (`tensor1`), an output tensor allocated with the right dimensions (`tensor2`), the name of the input operation of the graph that needs where the input data is fed (`input_opname`), and the output operation name in the graph where the outputs are obtained (`output_opname`). The input tensor is generally created from the matrices manually or using the `load_csv_as_matrix/2` function, and then passed through to one of the tensor creation functions. For image classification the `load_image_as_tensor/1` can also be used to create the input tensor from an image. The output tensor is created using the tensor allocation functions (generally containing `alloc` at the end of the function name).  
 
   - Returns a List of Lists (similar to the `matrix_to_lists/1` function) containing the generated predictions as per the output tensor dimensions.
+  
+- `add_scalar_to_matrix/2`:
+  - Adds scalar value to matrix.
+  
+  - Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+  
+  - Returns a `%Matrix` modified matrix.
 
+- `subtract_scalar_from_matrix/2`:
+  - Subtracts scalar value from matrix.
+
+  - Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  - Returns a `%Matrix` modified matrix.
+  
+  
+- `multiply_matrix_with_scalar/2`:
+  - Multiplies scalar value with matrix.
+
+  - Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  - Returns a `%Matrix` modified matrix.
+
+- `divide_matrix_by_scalar/2`:
+  - Divides matrix values by scalar.
+
+  - Takes two arguments: `%Matrix` matrix and scalar value (int or float)
+
+  - Returns a `%Matrix` modified matrix.
+
+- `add_matrices/2`:
+  - Adds two matrices of same dimensions together.
+
+  - Takes in two `%Matrix` matrices as arguments.
+
+  - Returns the resultant `%Matrix` matrix.
+
+- `subtract_matrices/2`:
+  - Subtracts `matrix2` from `matrix1`.
+
+  - Takes in two `%Matrix` matrices as arguments.
+
+  - Returns the resultant `%Matrix` matrix.
+
+- `tensor_to_matrix/1`:
+  - Converts the data stored in a 2-D tensor back to a 2-D matrix.
+
+  - Takes in a single argument as a `%Tensor` tensor (any `TF_Datatype`).
+
+  - Returns a `%Matrix` 2-D matrix.
+
+  - __NOTE__: Tensorflex doesn't currently support 3-D matrices, and therefore
+  tensors that are 3-D (such as created using the `load_image_as_tensor/1`
+  function) cannot be converted back to a matrix, yet. Support for 3-D matrices
+  will be added soon.
 
 ### Examples
 Examples are generally added in full description on my blog [here](http://anshumanc.ml). A blog post covering how to do classification on the Iris Dataset is present [here](http://www.anshumanc.ml/gsoc/2018/06/14/gsoc/).
@@ -429,3 +483,8 @@ Thus we can clearly see that in this case the RNN indicates negative sentiment! 
     - [PR #26: Added documentation](https://github.com/anshuman23/tensorflex/pull/26)
     - [PR #28: Added improved tests](https://github.com/anshuman23/tensorflex/pull/28)
     - [PR #29: Adding metadata to mix.exs](https://github.com/anshuman23/tensorflex/pull/29)
+    - [PR #31: Update nifs.ex](https://github.com/anshuman23/tensorflex/pull/31)
+    - [PR #32: Fixed indentation and corrected warnings](https://github.com/anshuman23/tensorflex/pull/32)
+    - [PR #35: Added new matrix operations](https://github.com/anshuman23/tensorflex/pull/35)
+    - [PR #36: Fixed bugs in C code](https://github.com/anshuman23/tensorflex/pull/36)
+    - [PR #37: Added tensor_to_matrix/1 (with tests/docs)](https://github.com/anshuman23/tensorflex/pull/37)
