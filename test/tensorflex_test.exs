@@ -188,6 +188,17 @@ defmodule TensorflexTest do
 	_m = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :no_header, delimiter: ",")
       end
     end
+
+    test "image-to-tensor loading function check" do
+      {:ok, img_tensor} = Tensorflex.load_image_as_tensor("./test/cropped_panda.jpg")
+      {:ok, :tf_uint8} = Tensorflex.tensor_datatype img_tensor
+    end
+
+    test "image-to-tensor function incorrect usage check" do
+      assert_raise ArgumentError, fn -> 
+	{:ok, _tensor} = Tensorflex.load_image_as_tensor("./test/sample1.csv")
+      end
+    end
   end
   
 end
