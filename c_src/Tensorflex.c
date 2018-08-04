@@ -1023,6 +1023,55 @@ static ERL_NIF_TERM subtract_matrices(ErlNifEnv* env, int argc, const ERL_NIF_TE
     return ret;
 }
 
+static ERL_NIF_TERM tensor_to_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+  unsigned i,j;
+  ERL_NIF_TERM ret;
+  TF_Tensor **tensor;
+  mx_t mx;
+  mx.p = NULL;
+  enif_get_resource(env, argv[0], tensor_resource, (void *) &tensor);
+  TF_DataType type =  TF_TensorType(*tensor);
+  if(TF_NumDims(*tensor) == 2) {
+	mx.p = alloc_matrix(env, (unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-2))), (unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-1))));
+	
+	if(type == TF_FLOAT){
+		float* float_tensor_data = (float*)TF_TensorData(*tensor);
+		for(j=0; j<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-2))); j++) {
+  			for(i=0; i<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-1))); i++)
+  			{
+      				POS(mx.p,j,i) = (double)*float_tensor_data++;
+
+  			}
+		}
+	}
+
+	else if(type == TF_INT32){
+		int32_t* int32_tensor_data = (int32_t*)TF_TensorData(*tensor);
+		for(j=0; j<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-2))); j++) {
+  			for(i=0; i<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-1))); i++)
+  			{
+      				POS(mx.p,j,i) = (double)*int32_tensor_data++;
+  			}
+		}
+	}	
+
+	else if(type == TF_DOUBLE){
+		double* double_tensor_data = (double*)TF_TensorData(*tensor);
+		for(j=0; j<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-2))); j++) {
+  			for(i=0; i<(unsigned)(TF_Dim(*tensor,(TF_NumDims(*tensor)-1))); i++)
+  			{
+      				POS(mx.p,j,i) = *double_tensor_data++;
+  			}
+		}
+	}
+  } else return enif_make_badarg(env);
+
+  ret = enif_make_resource(env, mx.p);
+  enif_release_resource(mx.p);
+  return ret;
+}
+
 static ErlNifFunc nif_funcs[] =
   {
     {"create_matrix", 3, create_matrix},
@@ -1053,6 +1102,7 @@ static ErlNifFunc nif_funcs[] =
     { "divide_matrix_by_scalar", 2, divide_matrix_by_scalar },
     { "add_matrices", 2, add_matrices },
     { "subtract_matrices", 2, subtract_matrices },
+    { "tensor_to_matrix", 1, tensor_to_matrix },
   };
 
 ERL_NIF_INIT(Elixir.Tensorflex.NIFs, nif_funcs, res_loader, NULL, NULL, NULL)

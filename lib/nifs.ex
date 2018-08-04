@@ -119,4 +119,8 @@ defmodule Tensorflex.NIFs do
     raise "NIF subtract_matrices/2 not implemented"
   end
 
+  def tensor_to_matrix(_tensor) do
+    raise "NIF tensor_to_matrix/1 not implemented"
+  end
+
 end
