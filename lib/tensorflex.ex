@@ -1407,5 +1407,123 @@ defmodule Tensorflex do
     new_ref = NIFs.subtract_matrices(ref1, ref2)
     %Matrix{nrows: nrows1, ncols: ncols2, data: new_ref}
   end
+
+  @doc """
+  Converts the data stored in a 2-D tensor back to a 2-D matrix.
+
+  Takes in a single argument as a `%Tensor` tensor (any `TF_Datatype`).
+
+  Returns a `%Matrix` 2-D matrix.
+
+  __NOTE__: Tensorflex doesn't currently support 3-D matrices, and therefore
+  tensors that are 3-D (such as created using the `load_image_as_tensor/1`
+  function) cannot be converted back to a matrix, yet. Support for 3-D matrices
+  will be added soon.
+
+  ## Examples
+  `tensor_to_matrix/1` converts any 2-D `%Tensor` tensor back to matrix form.
+  Consider `sample1.csv` back from the examples of `load_csv_as_matrix/2`:
+
+  ```elixir
+  iex(1)> vals = Tensorflex.load_csv_as_matrix("sample1.csv", header: :false)
+  %Tensorflex.Matrix{
+    data: #Reference<0.124471106.2360737795.170799>,
+    ncols: 5,
+    nrows: 3
+  }
+
+  iex(2)> dims = Tensorflex.create_matrix(1,2,[[3,5]])
+  %Tensorflex.Matrix{
+    data: #Reference<0.124471106.2360737795.170827>,
+    ncols: 2,
+    nrows: 1
+  }
+
+  iex(3)> {:ok, float64_tensor} = Tensorflex.float64_tensor vals,dims
+  {:ok,
+  %Tensorflex.Tensor{
+    datatype: :tf_double,
+    tensor: #Reference<0.124471106.2360737794.171586>
+  }}
+
+  iex(4)> m_float64 = Tensorflex.tensor_to_matrix float64_tensor     
+  %Tensorflex.Matrix{
+    data: #Reference<0.124471106.2360737794.171596>,
+    ncols: 5,
+    nrows: 3
+  }
+
+  iex(5)> Tensorflex.matrix_to_lists m_float64
+  [
+    [1.0, 2.0, 3.0, 4.0, 5.0],
+    [6.0, 7.0, 8.0, 9.0, 10.0],
+    [11.0, 12.0, 13.0, 14.0, 15.0]
+  ]
+
+  iex(6)> {:ok, float32_tensor} = Tensorflex.float32_tensor vals,dims
+  {:ok,
+  %Tensorflex.Tensor{
+    datatype: :tf_float,
+    tensor: #Reference<0.124471106.2360737794.172555>
+  }}
+
+  iex(7)> m_float32 = Tensorflex.tensor_to_matrix float32_tensor     
+  %Tensorflex.Matrix{
+    data: #Reference<0.124471106.2360737794.172563>,
+    ncols: 5,
+    nrows: 3
+  }
+
+  iex(8)> Tensorflex.matrix_to_lists m_float32                       
+  [
+    [1.0, 2.0, 3.0, 4.0, 5.0],
+    [6.0, 7.0, 8.0, 9.0, 10.0],
+    [11.0, 12.0, 13.0, 14.0, 15.0]
+  ]
+
+  iex(9)> {:ok, int32_tensor} = Tensorflex.int32_tensor vals,dims    
+  {:ok,
+  %Tensorflex.Tensor{
+    datatype: :tf_int32,
+    tensor: #Reference<0.124471106.2360737794.172578>
+  }}
+
+  iex(10)> m_int32 = Tensorflex.tensor_to_matrix int32_tensor         
+  %Tensorflex.Matrix{
+    data: #Reference<0.124471106.2360737794.172586>,
+    ncols: 5,
+    nrows: 3
+  }
+
+  iex(11)> Tensorflex.matrix_to_lists m_int32                     
+  [
+    [1.0, 2.0, 3.0, 4.0, 5.0],
+    [6.0, 7.0, 8.0, 9.0, 10.0],
+    [11.0, 12.0, 13.0, 14.0, 15.0]
+  ]
+
+  ```
+
+  The matrix values obtained in the conversions, `m_int32`, `m_float32`,
+  `m_float64` are identical to the `vals` matrix we had generated from the
+  `sample1.csv` file:
+
+  ```elixir
+
+  iex(12)> Tensorflex.matrix_to_lists vals   
+  [
+    [1.0, 2.0, 3.0, 4.0, 5.0],
+    [6.0, 7.0, 8.0, 9.0, 10.0],
+    [11.0, 12.0, 13.0, 14.0, 15.0]
+  ]
+
+  ```
+  """
+
+  def tensor_to_matrix(%Tensor{datatype: _datatype, tensor: ref}) do
+    matrix_ref = NIFs.tensor_to_matrix(ref)
+    {nrows, ncols} = NIFs.size_of_matrix matrix_ref
+    %Matrix{nrows: nrows, ncols: ncols, data: matrix_ref}
+  end
   
 end

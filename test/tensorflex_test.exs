@@ -27,6 +27,45 @@ defmodule TensorflexTest do
       assert {5,4} = Tensorflex.size_of_matrix mat
       assert 7.0 = Tensorflex.matrix_pos(mat,5,3)
     end
+
+    test "add scalar to matrix check" do
+      m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m = Tensorflex.add_scalar_to_matrix(m, 5)
+      assert [[6.0, 7.0, 8.0], [9.0, 10.0, 11.0]] = Tensorflex.matrix_to_lists m
+    end
+
+    test "subtract scalar from matrix check" do
+      m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m = Tensorflex.subtract_scalar_from_matrix m,3
+      assert [[-2.0, -1.0, 0.0], [1.0, 2.0, 3.0]] = Tensorflex.matrix_to_lists m
+    end
+
+    test "multiply matrix with scalar check" do
+      m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m = Tensorflex.multiply_matrix_with_scalar m,5
+      assert [[5.0, 10.0, 15.0], [20.0, 25.0, 30.0]] = Tensorflex.matrix_to_lists m
+    end
+
+    test "divide matrix with scalar check" do
+      m = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m = Tensorflex.divide_matrix_by_scalar m,3
+      assert [[0.3333333333333333, 0.6666666666666666, 1.0], [1.3333333333333333, 1.6666666666666667, 2.0]] = Tensorflex.matrix_to_lists m
+    end
+
+    test "add two matrices check" do
+      m1 = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m2 = Tensorflex.create_matrix(2,3,[[4,5,6],[1,2,3]])
+      m_added = Tensorflex.add_matrices m1,m2
+      assert [[5.0, 7.0, 9.0], [5.0, 7.0, 9.0]] = Tensorflex.matrix_to_lists m_added
+    end
+
+    test "subtract two matrices check" do
+      m1 = Tensorflex.create_matrix(2,3,[[1,2,3],[4,5,6]])
+      m2 = Tensorflex.create_matrix(2,3,[[4,5,6],[1,2,3]])
+      m_subtracted = Tensorflex.subtract_matrices m1,m2
+      assert [[-3.0, -3.0, -3.0], [3.0, 3.0, 3.0]] = Tensorflex.matrix_to_lists m_subtracted
+    end
+    
   end
 
   describe "float32 tensor functionalities" do
@@ -197,6 +236,37 @@ defmodule TensorflexTest do
     test "image-to-tensor function incorrect usage check" do
       assert_raise ArgumentError, fn -> 
 	{:ok, _tensor} = Tensorflex.load_image_as_tensor("./test/sample1.csv")
+      end
+    end
+
+    test "float64_tensor to matrix conversion check" do
+      vals = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :false)
+      dims = Tensorflex.create_matrix(1,2,[[3,5]])
+      {:ok, float64_tensor} = Tensorflex.float64_tensor vals,dims
+      m_float64 = Tensorflex.tensor_to_matrix float64_tensor
+      assert [[1.0, 2.0, 3.0, 4.0, 5.0], [6.0, 7.0, 8.0, 9.0, 10.0], [11.0, 12.0, 13.0, 14.0, 15.0]] = Tensorflex.matrix_to_lists m_float64 
+    end
+
+    test "int32_tensor to matrix conversion check" do
+      vals = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :false)
+      dims = Tensorflex.create_matrix(1,2,[[3,5]])
+      {:ok, int32_tensor} = Tensorflex.int32_tensor vals,dims
+      m_int32 = Tensorflex.tensor_to_matrix int32_tensor
+      assert [[1.0, 2.0, 3.0, 4.0, 5.0], [6.0, 7.0, 8.0, 9.0, 10.0], [11.0, 12.0, 13.0, 14.0, 15.0]] = Tensorflex.matrix_to_lists m_int32
+    end
+
+    test "float32_tensor to matrix conversion check" do
+      vals = Tensorflex.load_csv_as_matrix("./test/sample1.csv", header: :false)
+      dims = Tensorflex.create_matrix(1,2,[[3,5]])
+      {:ok, float32_tensor} = Tensorflex.float32_tensor vals,dims
+      m_float32 = Tensorflex.tensor_to_matrix float32_tensor
+      assert [[1.0, 2.0, 3.0, 4.0, 5.0], [6.0, 7.0, 8.0, 9.0, 10.0], [11.0, 12.0, 13.0, 14.0, 15.0]] = Tensorflex.matrix_to_lists m_float32
+    end
+
+    test "incorrect usage tensor-to-matrix check" do
+      {:ok, tensor} = Tensorflex.load_image_as_tensor("./test/cropped_panda.jpg")
+      assert_raise ArgumentError, fn -> 
+	_m = Tensorflex.tensor_to_matrix tensor
       end
     end
   end
