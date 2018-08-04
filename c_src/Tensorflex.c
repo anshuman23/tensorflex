@@ -26,7 +26,6 @@ typedef union
 
 static int get_number(ErlNifEnv* env, ERL_NIF_TERM term, double* dp);
 static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols);
-static Matrix* realloc_matrix(ErlNifEnv* env, Matrix* mx, unsigned nrows, unsigned ncols);
 static void matrix_destr(ErlNifEnv* env, void* obj);
 
 static ErlNifResourceType* resource_type = NULL;
@@ -193,17 +192,24 @@ static ERL_NIF_TERM matrix_to_lists(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 
 static ERL_NIF_TERM append_to_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  mx_t mx;
-  unsigned j;
+  Matrix* mx_ret = NULL;
+  unsigned j, it_i, it_j;
   unsigned nrows, ncols;
   ERL_NIF_TERM list, row, ret;
+  mx_t mx;
 
   if (!enif_get_resource(env, argv[0], resource_type, &mx.vp)) return enif_make_badarg(env);
 
   nrows = mx.p->nrows;
   ncols = mx.p->ncols;
 
-  mx.p = realloc_matrix(env, mx.p, nrows+1, ncols);
+  mx_ret = alloc_matrix(env, nrows+1, ncols);
+  for(it_i = 0; it_i < nrows; it_i++) {
+	for(it_j = 0; it_j < ncols; it_j++){
+		POS(mx_ret, it_i, it_j) = POS(mx.p, it_i, it_j);
+	} 
+  }
+
   list = argv[1];
   if (!enif_get_list_cell(env, list, &row, &list)) {
 	    goto badarg;
@@ -211,7 +217,7 @@ static ERL_NIF_TERM append_to_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TER
   for (j = 0; j<ncols; j++) {
     ERL_NIF_TERM v;
     if (!enif_get_list_cell(env, row, &v, &row) ||
-	!get_number(env, v, &POS(mx.p,nrows,j))) { 
+	!get_number(env, v, &POS(mx_ret,nrows,j))) { 
 	goto badarg;
     }	    
   }
@@ -223,8 +229,8 @@ static ERL_NIF_TERM append_to_matrix(ErlNifEnv* env, int argc, const ERL_NIF_TER
 	goto badarg;
     }
 
-    ret = enif_make_resource(env, mx.p);
-    enif_release_resource(mx.p);
+    ret = enif_make_resource(env, mx_ret);
+    enif_release_resource(mx_ret);
     return ret;
 
 badarg:
@@ -247,14 +253,6 @@ static Matrix* alloc_matrix(ErlNifEnv* env, unsigned nrows, unsigned ncols)
     mx->nrows = nrows;
     mx->ncols = ncols;
     mx->data = enif_alloc(nrows*ncols*sizeof(double));
-    return mx;
-}
-
-static Matrix* realloc_matrix(ErlNifEnv* env, Matrix* mx, unsigned nrows, unsigned ncols)
-{
-    mx->nrows = nrows;
-    mx->ncols = ncols;
-    mx->data = enif_realloc(mx->data, nrows*ncols*sizeof(double));
     return mx;
 }
 
@@ -495,8 +493,14 @@ static ERL_NIF_TERM float64_tensor(ErlNifEnv *env, int argc, const ERL_NIF_TERM 
 	}
     }
 
-    tensor = TF_NewTensor(TF_DOUBLE, dims, ndims, mx1.p->data, (size_alloc) * sizeof(double), tensor_deallocator, 0);
+    double *data = enif_alloc((mx1.p->nrows)*(mx1.p->ncols)*sizeof(double));
+    for (i = 0; i < mx1.p->nrows; i++) {
+	for (j = 0; j < mx1.p->ncols; j++) {
+	    data[(i)*(mx1.p->ncols) + (j)] = (double) POS(mx1.p, i, j);
+	}
+    }
 
+    tensor = TF_NewTensor(TF_DOUBLE, dims, ndims, data, (size_alloc) * sizeof(double), tensor_deallocator, 0);
   }
 
   memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
@@ -775,7 +779,12 @@ static ERL_NIF_TERM load_image_as_tensor(ErlNifEnv *env, int argc, const ERL_NIF
   const int size_alloc = output_size * sizeof(unsigned char);
   int64_t dims[3] = {width, height, num_pixels};
 
-  tensor = TF_NewTensor(TF_UINT8, dims, 3, output, size_alloc, tensor_deallocator, 0);
+  uint8_t *data = enif_alloc(output_size*sizeof(uint8_t));
+  for(int it = 0; it < output_size; it++){
+	data[it] = (uint8_t)output[it];
+  }
+
+  tensor = TF_NewTensor(TF_UINT8, dims, 3, data, size_alloc, tensor_deallocator, 0);
   memcpy((void *) tensor_resource_alloc, (void *) &tensor, sizeof(TF_Tensor *));
   ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
   enif_release_resource(tensor_resource_alloc);
