@@ -1,5 +1,7 @@
 # Tensorflex
 
+[![Hex](https://img.shields.io/hexpm/v/tensorflex.svg?style=flat)](https://hex.pm/packages/tensorflex/0.1.2)
+
 ## Contents
 - [__How to run__](https://github.com/anshuman23/tensorflex/#how-to-run)
 - [__Documentation__](https://github.com/anshuman23/tensorflex/#documentation)
