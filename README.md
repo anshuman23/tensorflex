@@ -14,7 +14,7 @@
 - Simply add Tensorflex to your list of dependencies in `mix.exs` and you are good to go!: 
 
 ```elixir
-{:tensorflex, "~> 0.1.1"}
+{:tensorflex, "~> 0.1.2"}
 ```
 In case you want the latest development version use this:
 ```elixir
