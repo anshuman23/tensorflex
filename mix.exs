@@ -4,7 +4,7 @@ defmodule Tensorflex.MixProject do
   def project do
     [
       app: :tensorflex,
-      version: "0.1.0",
+      version: "0.1.2",
       compilers: [:elixir_make] ++ Mix.compilers,
       elixir: "~> 1.6",
       build_embedded: Mix.env == :prod,
