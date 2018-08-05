@@ -1,0 +1,21 @@
+language: elixir
+elixir: '1.6.6'
+otp_release: '21.0'
+
+before_install: 
+- sudo apt-get -y install libjpeg-dev
+- TF_TYPE="cpu"
+- OS="linux"
+- TARGET_DIRECTORY="/usr/local"
+- curl -L \
+   "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${OS}-x86_64-1.9.0.tar.gz" |
+   sudo tar -C $TARGET_DIRECTORY -xz
+- sudo ldconfig 
+
+install:
+- mix local.rebar --force
+- mix local.hex --force
+- mix deps.get
+
+script:
+ - mix test
