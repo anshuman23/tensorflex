@@ -6,6 +6,7 @@
   - Please open an issue if extant functionality is not working as expected with __proper usage (or failure) examples__, and __mention the current Tensorflow C API version you are running along with your OS__. 
   - If you would like to submit a pull request as a fix for opened issues, refer to the issue in your PR and ensure that adding your code does not break any other tests.
   - If you are submitting a PR with new functionality, please write documentation adhering to the existing documentation style (read the docs [here](https://hexdocs.pm/tensorflex/Tensorflex.html)), and also write tests describing this functionality. You can also open an issue for new functionality to discuss your ideas with the contributors/maintainers.  
+  - If your PR contains C code please format it using clang-format: `clang-format -i <your-C-code-file.c>`
   
 ## Key contribution areas
 Tensorflex basically involves four main functionalities that can be improved upon:
