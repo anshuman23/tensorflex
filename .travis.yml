@@ -3,6 +3,9 @@ elixir: '1.6.6'
 otp_release: '21.0'
 sudo: required
 build: trusty
+
+env: 
+- MIX_ENV=test
   
 before_install: 
 - sudo apt-get -y install openssl libssl-dev libcurl4-openssl-dev
@@ -14,4 +17,5 @@ before_install:
 - sudo ldconfig 
 
 script:
-- mix do deps.get, test
+- mix deps.get 
+- mix test
