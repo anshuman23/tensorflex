@@ -488,3 +488,4 @@ Thus we can clearly see that in this case the RNN indicates negative sentiment! 
     - [PR #35: Added new matrix operations](https://github.com/anshuman23/tensorflex/pull/35)
     - [PR #36: Fixed bugs in C code](https://github.com/anshuman23/tensorflex/pull/36)
     - [PR #37: Added tensor_to_matrix/1 (with tests/docs)](https://github.com/anshuman23/tensorflex/pull/37)
+    - [PR #38: Create CONTRIBUTING.md](https://github.com/anshuman23/tensorflex/pull/38)
