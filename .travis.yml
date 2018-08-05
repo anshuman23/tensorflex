@@ -13,10 +13,6 @@ before_install:
 - curl -L "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-${TF_TYPE}-${OS}-x86_64-1.9.0.tar.gz" | sudo tar -C $TARGET_DIRECTORY -xz
 - sudo ldconfig 
 
-install:
-- mix local.rebar --force
-- mix local.hex --force
-- mix deps.get
-
 script:
- - mix test
+- MIX_ENV=test 
+- mix do deps.get, test
