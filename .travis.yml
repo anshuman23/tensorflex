@@ -14,5 +14,4 @@ before_install:
 - sudo ldconfig 
 
 script:
-- MIX_ENV=test 
 - mix do deps.get, test
