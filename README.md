@@ -1,5 +1,6 @@
 # Tensorflex
 
+[![Build Status](https://travis-ci.com/anshuman23/tensorflex.svg?branch=master)](https://travis-ci.com/anshuman23/tensorflex)
 [![Hex](https://img.shields.io/hexpm/v/tensorflex.svg?style=flat)](https://hex.pm/packages/tensorflex/0.1.2)
 
 ## Contents
