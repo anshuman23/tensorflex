@@ -1526,4 +1526,22 @@ defmodule Tensorflex do
     %Matrix{nrows: nrows, ncols: ncols, data: matrix_ref}
   end
   
+  @doc """
+  TODO: write docs
+  """
+
+  def binary_to_matrix(binary, nrows, ncols) do
+    matrix_ref = NIFs.binary_to_matrix(binary, nrows, ncols)
+    %Matrix{nrows: nrows, ncols: ncols, data: matrix_ref}
+  end
+
+  @doc """
+  TODO: write docs
+  """
+
+  def matrix_to_float32_tensor(%Matrix{data: matrix_ref}, dims) do
+    {:ok, ref} = NIFs.matrix_to_float32_tensor(matrix_ref, dims)
+    {:ok, %Tensor{datatype: :tf_float, tensor: ref}}
+  end
+
 end
