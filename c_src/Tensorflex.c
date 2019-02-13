@@ -412,7 +412,7 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc,
   long bytes_read = fread(data, fsize, 1, f);
   if(bytes_read != fsize)
   {
-     printf("warning bytes_read [%ld] do match expected fsize",bytes_read);
+     printf("warning bytes_read [%ld] do match expected fsize [%ld]",bytes_read, fsize);
   }
   fclose(f);
 
