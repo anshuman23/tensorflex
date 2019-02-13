@@ -409,7 +409,11 @@ static ERL_NIF_TERM read_graph(ErlNifEnv *env, int argc,
   fseek(f, 0, SEEK_SET);
 
   void *data = malloc(fsize);
-  fread(data, fsize, 1, f);
+  long bytes_read = fread(data, fsize, 1, f);
+  if(bytes_read != fsize)
+  {
+     printf("warning bytes_read [%ld] do match expected fsize",bytes_read);
+  }
   fclose(f);
 
   TF_Buffer *buf = TF_NewBuffer();
@@ -818,7 +822,11 @@ static ERL_NIF_TERM load_image_as_tensor(ErlNifEnv *env, int argc,
   fseek(f, 0, SEEK_SET);
 
   input_img = (unsigned char *)malloc(input_size);
-  fread(input_img, input_size, 1, f);
+  long bytes_read = fread(input_img, input_size, 1, f);
+  if(bytes_read != input_size)
+  {
+     printf("warning bytes_read [%ld] do match expected input_size [%ld]",bytes_read, input_size);
+  }
   fclose(f);
 
   cinfo.err = jpeg_std_error(&jerr);
