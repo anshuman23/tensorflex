@@ -1,5 +1,7 @@
 # Tensorflex
 
+The paper detailing Tensorflex was presented at NeurIPS/NIPS 2018 as part of the MLOSS workshop. The paper can be found [here](https://openreview.net/pdf?id=rkxeCt6VhX).  
+
 [![Build Status](https://travis-ci.com/anshuman23/tensorflex.svg?branch=master)](https://travis-ci.com/anshuman23/tensorflex)
 [![Hex](https://img.shields.io/hexpm/v/tensorflex.svg?style=flat)](https://hex.pm/packages/tensorflex/0.1.2)
 
