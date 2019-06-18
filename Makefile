@@ -1,6 +1,6 @@
 CFLAGS = -g -O3 -Wall -std=c99
 ERLANG_PATH = $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
-LIBTENSORFLOW_PATH = /usr/local/lib
+LIBTENSORFLOW_PATH ?= /usr/local/lib
 CFLAGS += -I$(ERLANG_PATH)
 CFLAGS += -Ic_src
 LDFLAGS += -L$(LIBTENSORFLOW_PATH)
