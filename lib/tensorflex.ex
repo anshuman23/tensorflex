@@ -1595,6 +1595,7 @@ defmodule Tensorflex do
     datatype: :tf_float,
     tensor: #Reference<0.2581978403.3326476294.49507>
   }}
+  ```
   """
 
   def matrix_to_float32_tensor(%Matrix{data: matrix_ref}, dims) do
