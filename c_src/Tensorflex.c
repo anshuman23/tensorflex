@@ -1160,6 +1160,69 @@ static ERL_NIF_TERM tensor_to_matrix(ErlNifEnv *env, int argc,
   return ret;
 }
 
+static ERL_NIF_TERM binary_to_matrix(ErlNifEnv *env, int argc,
+                                     const ERL_NIF_TERM argv[]) {
+  ErlNifBinary in_binary;
+  enif_inspect_binary(env, argv[0], &in_binary);
+
+  unsigned ncols, nrows;
+  enif_get_uint(env, argv[1], &nrows);
+  enif_get_uint(env, argv[2], &ncols);
+
+  Matrix * mx;
+  mx = alloc_matrix(env, nrows, ncols);
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
+      POS(mx, i, j) = in_binary.data[i * ncols + j];
+    }
+  }
+
+  ERL_NIF_TERM ret;
+  ret = enif_make_resource(env, mx);
+  enif_release_resource(mx);
+
+  return ret;
+}
+
+static ERL_NIF_TERM matrix_to_float32_tensor(ErlNifEnv *env, int argc,
+                                             const ERL_NIF_TERM argv[]) {
+  TF_Tensor *tensor;
+  TF_Tensor **tensor_resource_alloc =
+    enif_alloc_resource(tensor_resource, sizeof(TF_Tensor *));
+
+  mx_t mx;
+  if (!enif_get_resource(env, argv[0], resource_type, &mx.vp))
+    return enif_make_badarg(env);
+
+  const int size_alloc = mx.p->ncols * mx.p->nrows * sizeof(float);
+  float *data = enif_alloc(size_alloc);
+  for (int i = 0; i < mx.p->nrows; ++i) {
+    for (int j = 0; j < mx.p->ncols; ++j) {
+      data[i * mx.p->ncols + j] = (float)POS(mx.p, i, j);
+    }
+  }
+
+  int arity;
+  const ERL_NIF_TERM * array;
+  enif_get_tuple(env, argv[1], &arity, &array);
+
+  int64_t * dims = enif_alloc(arity);
+  for (int i = 0; i < arity; ++i) {
+    unsigned dim;
+    enif_get_uint(env, array[i], &dim);
+    dims[i] = dim;
+  }
+
+  tensor =
+    TF_NewTensor(TF_FLOAT, dims, arity, data, size_alloc, tensor_deallocator, 0);
+  memcpy((void *)tensor_resource_alloc, (void *)&tensor, sizeof(TF_Tensor *));
+  ERL_NIF_TERM new_tensor = enif_make_resource(env, tensor_resource_alloc);
+  enif_release_resource(tensor_resource_alloc);
+
+  enif_free(dims);
+  return enif_make_tuple2(env, enif_make_atom(env, "ok"), new_tensor);
+}
+
 static ErlNifFunc nif_funcs[] = {
     {"create_matrix", 3, create_matrix},
     {"matrix_pos", 3, matrix_pos},
@@ -1190,6 +1253,8 @@ static ErlNifFunc nif_funcs[] = {
     {"add_matrices", 2, add_matrices},
     {"subtract_matrices", 2, subtract_matrices},
     {"tensor_to_matrix", 1, tensor_to_matrix},
+    {"binary_to_matrix", 3, binary_to_matrix},
+    {"matrix_to_float32_tensor", 2, matrix_to_float32_tensor}
 };
 
 ERL_NIF_INIT(Elixir.Tensorflex.NIFs, nif_funcs, res_loader, NULL, NULL, NULL)

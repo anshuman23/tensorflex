@@ -123,4 +123,12 @@ defmodule Tensorflex.NIFs do
     raise "NIF tensor_to_matrix/1 not implemented"
   end
 
+  def binary_to_matrix(_binary, _nrows, _ncols) do
+    raise "NIF binary_to_matrix/3 not implemented"
+  end
+
+  def matrix_to_float32_tensor(_matrix, _dims) do
+    raise "NIF matrix_to_float32_tensor/2 not implemented"
+  end
+
 end

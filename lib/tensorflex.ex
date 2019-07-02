@@ -1525,5 +1525,82 @@ defmodule Tensorflex do
     {nrows, ncols} = NIFs.size_of_matrix matrix_ref
     %Matrix{nrows: nrows, ncols: ncols, data: matrix_ref}
   end
-  
+
+  @doc """
+  Creates a 2-D Tensorflex matrix from a given binary by iterating through a consequently allocated bytes.
+
+  Takes three input arguments: binary data (`binary`), number of rows in matrix (`nrows`), number of columns in matrix (`ncols`).
+
+  Returns a `%Matrix` Tensorflex struct type.
+
+  ## Examples:
+
+  _Creating a new matrix_
+
+  ```elixir
+  iex(1)> mat = Tensorflex.binary_to_matrix(<<1, 2, 3, 4>>, 1, 4)
+  %Tensorflex.Matrix{
+    data: #Reference<0.2581978403.3326476294.49460>,
+    ncols: 4,
+    nrows: 1
+  }
+  ```
+
+  Useful when there's a binary (such as an image), that has to be loaded
+  into a matrix:
+
+  ```elixir
+  iex(1)> image = File.read!("/tmp/image.rgb")
+  <<19, 19, 18, 21, 18, 19, 17, 18, 22, 19, 21, 21, 21, 22, 18, ...>>
+  iex(2)> Tensorflex.binary_to_matrix(image, 100, 100 * 3)
+  %Tensorflex.Matrix{
+    data: #Reference<0.2581978403.3326476294.49326>,
+    ncols: 300,
+    nrows: 100
+  }
+  ```
+
+  """
+
+  def binary_to_matrix(binary, nrows, ncols) do
+    matrix_ref = NIFs.binary_to_matrix(binary, nrows, ncols)
+    %Matrix{nrows: nrows, ncols: ncols, data: matrix_ref}
+  end
+
+  @doc """
+  Creates a `TF_FLOAT` tensor from Tensorflex matrices with a given dimension.
+
+  Takes two arguments: a `%Matrix` matrix (`matrix1`) containing the values the
+  tensor should have a tuple with a desired dimension of a new tensor.
+
+  Returns a tuple `{:ok, %Tensor}` where `%Tensor` represents an internal
+  Tensorflex struct type that is used for holding tensor data and type.
+
+  ## Examples:
+
+  ```elixir
+  iex(1)> image = File.read!("/tmp/image.rgb")
+  <<19, 19, 18, 21, 18, 19, 17, 18, 22, 19, 21, 21, 21, 22, 18, ...>>
+
+  iex(2)> mat = Tensorflex.binary_to_matrix(image, 311, 162 * 3)
+  %Tensorflex.Matrix{
+    data: #Reference<0.2581978403.3326476294.49499>,
+    ncols: 486,
+    nrows: 311
+  }
+
+  iex(3)> Tensorflex.matrix_to_float32_tensor(mat, {1, 311, 162, 3})
+  {:ok,
+    %Tensorflex.Tensor{
+    datatype: :tf_float,
+    tensor: #Reference<0.2581978403.3326476294.49507>
+  }}
+  ```
+  """
+
+  def matrix_to_float32_tensor(%Matrix{data: matrix_ref}, dims) do
+    {:ok, ref} = NIFs.matrix_to_float32_tensor(matrix_ref, dims)
+    {:ok, %Tensor{datatype: :tf_float, tensor: ref}}
+  end
+
 end
